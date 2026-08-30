@@ -6,7 +6,7 @@ plugins {
 	kotlin("plugin.jpa") version "2.3.21"
 }
 
-group = "com.excsi"
+group = "dev.excsi"
 version = "0.0.1"
 
 java {
@@ -22,6 +22,7 @@ repositories {
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-webmvc")
+	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("tools.jackson.module:jackson-module-kotlin")
 	runtimeOnly("org.postgresql:postgresql")

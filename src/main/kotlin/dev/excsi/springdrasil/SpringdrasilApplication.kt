@@ -1,4 +1,4 @@
-package com.excsi.springdrasil
+package dev.excsi.springdrasil
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

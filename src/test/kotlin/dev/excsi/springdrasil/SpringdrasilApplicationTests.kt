@@ -1,4 +1,4 @@
-package com.excsi.springdrasil
+package dev.excsi.springdrasil
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
