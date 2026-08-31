@@ -20,6 +20,4 @@ class Account(
     var passwordHash: String
 
 
-) {
-
-}
+)
