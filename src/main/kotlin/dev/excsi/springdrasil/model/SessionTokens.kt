@@ -1,4 +1,4 @@
 package dev.excsi.springdrasil.model
 
-class Session {
+class SessionTokens {
 }

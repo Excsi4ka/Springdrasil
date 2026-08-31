@@ -3,23 +3,23 @@ package dev.excsi.springdrasil.model
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
-import jakarta.persistence.JoinColumn
-import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
 import java.util.UUID
 
 @Entity
-@Table(name = "profiles")
-class Profile(
+@Table(name = "accounts")
+class Account(
 
     @field:Id
     var id: UUID,
 
     @field:Column(name = "email", unique = true, nullable = false)
-    var username: String,
+    var email: String,
 
-    @field:OneToOne(optional = false)
-    @field:JoinColumn(name = "account_id", nullable = false)
-    var account: Account,
+    @field:Column(name = "password_hash", nullable = false)
+    var passwordHash: String
+
+
 ) {
+
 }
