@@ -5,5 +5,5 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/sessionserver")
-class SessionController {
+class SessionServerController {
 }

@@ -13,8 +13,8 @@ class AccountService(
         return accountRepository.findByUsername(username)
     }
 
-    fun findByUsernameAndLock(username: String) : Account? {
-        return accountRepository.findByUsernameForUpdate(username)
+    fun findByUsernameWithProfile(username: String) : Account? {
+        return accountRepository.findByUsernameWithProfile(username)
     }
 
     fun registerUser(email: String, username: String, password: String) {

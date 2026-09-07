@@ -18,18 +18,30 @@ data class Agent(
 data class AuthResponse(
     val accessToken: String,
     val clientToken: String,
+    val availableProfiles: List<ProfileDto>,
+    val selectedProfile: ProfileDto,
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    val user: User? = null
-
+    val user: UserDto? = null
 )
 
-data class User(
+data class UserDto(
     val id: String,
     val properties: List<Property>
 )
 
 data class Property(
     val name: String,
-    val value: String
+    val value: String,
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    val signature: String? = null,
+)
+
+data class ProfileDto(
+    val id: String,
+    val name: String,
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    val properties: List<Property>? = null,
 )

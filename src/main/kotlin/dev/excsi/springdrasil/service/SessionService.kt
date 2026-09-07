@@ -6,6 +6,8 @@ import dev.excsi.springdrasil.model.SessionToken
 import dev.excsi.springdrasil.model.TokenState
 import dev.excsi.springdrasil.repository.SessionTokenRepository
 import dev.excsi.springdrasil.unhyphenatedString
+import jakarta.persistence.EntityManager
+import jakarta.persistence.LockModeType
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
@@ -15,11 +17,14 @@ import java.util.UUID
 class SessionService(
     val sessionTokenRepository: SessionTokenRepository,
     val configurationValues: ConfigurationValues,
+    val entityManager: EntityManager,
 ) {
 
     @Transactional
     fun createSessionTokenOnAuthentication(suppliedClientToken : String?, profile: Profile): SessionToken {
         val maxTokens = configurationValues.maxTokensPerUserInRotation
+
+        entityManager.lock(profile, LockModeType.PESSIMISTIC_WRITE)
 
         val existingTokens = sessionTokenRepository
             .findAllByBoundProfileIdOrderByIssuedAtAsc(profile.id)

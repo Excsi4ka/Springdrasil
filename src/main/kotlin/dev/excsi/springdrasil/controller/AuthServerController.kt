@@ -21,4 +21,14 @@ class AuthServerController(
     fun authenticate(@RequestBody authRequest: AuthRequest) : AuthResponse {
         return authenticationService.authenticate(authRequest)
     }
+
+    @PostMapping("refresh")
+    fun refresh() {
+
+    }
+
+    @PostMapping("validate")
+    fun validate() {
+
+    }
 }
