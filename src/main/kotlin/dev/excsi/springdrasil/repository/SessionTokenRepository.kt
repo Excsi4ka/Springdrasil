@@ -6,7 +6,5 @@ import java.util.UUID
 
 interface SessionTokenRepository : JpaRepository<SessionToken, String> {
 
-    fun countByBoundProfileId(profileId : UUID) : Long
-
-    fun findFirstByBoundProfileIdOrderByIssuedAtAsc(profileId: UUID): SessionToken?
+    fun findAllByBoundProfileIdOrderByIssuedAtAsc(profileId: UUID): List<SessionToken>
 }

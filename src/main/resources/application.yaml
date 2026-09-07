@@ -16,4 +16,4 @@ spring:
 
 custom:
   sessionTokenTimeout: ${SESSION_TIMEOUT:10d}
-  maxTokensPerUserInRotation: ${MAX_TOKENS_PER_USER:10}
+  maxTokensPerUserInRotation: ${MAX_TOKENS_PER_USER:5}
