@@ -6,5 +6,5 @@ import java.util.UUID
 
 interface AccountRepository : JpaRepository<Account, UUID> {
 
-
+    fun findByUsername(username: String): Account?
 }

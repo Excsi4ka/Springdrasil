@@ -1,10 +1,12 @@
 package dev.excsi.springdrasil
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.boot.runApplication
 import java.util.UUID
 
 @SpringBootApplication
+@ConfigurationPropertiesScan
 class SpringdrasilApplication
 
 fun main(args: Array<String>) {
