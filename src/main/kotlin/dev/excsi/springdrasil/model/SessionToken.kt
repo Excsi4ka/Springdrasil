@@ -22,7 +22,7 @@ class SessionToken(
     var clientToken: String,
 
     @field:ManyToOne(optional = false)
-    @field:JoinColumn(name = "bound_profiles", nullable = false)
+    @field:JoinColumn(name = "profile_uuid", nullable = false)
     var boundProfile: Profile,
 
     @field:Column(name = "issued_at", nullable = false)

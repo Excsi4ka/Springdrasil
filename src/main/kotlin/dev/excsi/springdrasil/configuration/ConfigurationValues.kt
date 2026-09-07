@@ -6,7 +6,7 @@ import java.time.Duration
 @ConfigurationProperties(prefix = "custom")
 data class ConfigurationValues(
 
-    val sessionTokenTimeout: Duration
+    val sessionTokenTimeout: Duration,
 
-
+    val maxTokensPerUserInRotation: Int
 )
