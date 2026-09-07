@@ -4,6 +4,7 @@ import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
+import jakarta.persistence.FetchType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
@@ -21,7 +22,7 @@ class SessionToken(
     @field:Column(name = "client_token", nullable = false)
     var clientToken: String,
 
-    @field:ManyToOne(optional = false)
+    @field:ManyToOne(fetch = FetchType.LAZY, optional = false)
     @field:JoinColumn(name = "profile_uuid", nullable = false)
     var boundProfile: Profile,
 

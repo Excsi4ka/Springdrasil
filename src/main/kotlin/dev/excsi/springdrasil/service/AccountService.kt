@@ -13,10 +13,6 @@ class AccountService(
         return accountRepository.findByUsername(username)
     }
 
-    fun findByUsernameWithProfile(username: String) : Account? {
-        return accountRepository.findByUsernameWithProfile(username)
-    }
-
     fun registerUser(email: String, username: String, password: String) {
         TODO()
     }

@@ -4,7 +4,9 @@ import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
+import jakarta.persistence.FetchType
 import jakarta.persistence.Id
+import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 import java.util.Locale
 import java.util.UUID
@@ -14,7 +16,7 @@ import java.util.UUID
 class Profile(
 
     @field:Id
-    var id: UUID,
+    var id: UUID = UUID.randomUUID(),
 
     @field:Column(name = "profile_username", unique = true, nullable = false)
     var profileUsername: String,
@@ -22,6 +24,9 @@ class Profile(
     @field:Enumerated(EnumType.STRING)
     @field:Column(name = "skin_type", nullable = false)
     var skinType: SkinType = SkinType.DEFAULT,
+
+    @field:OneToMany(mappedBy = "profile", fetch = FetchType.LAZY)
+    var textures: MutableSet<Texture> = mutableSetOf(),
 )
 
 enum class SkinType {

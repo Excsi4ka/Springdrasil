@@ -13,7 +13,7 @@ import java.util.UUID
 class Account(
 
     @field:Id
-    var id: UUID,
+    var id: UUID = UUID.randomUUID(),
 
     // either email or profile name
     @field:Column(name = "username", unique = true, nullable = false)

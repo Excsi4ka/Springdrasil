@@ -20,7 +20,7 @@ class AuthenticationService(
 
     @Transactional
     fun authenticate(authRequest: AuthRequest) : AuthResponse {
-        val account = accountService.findByUsernameWithProfile(authRequest.username)
+        val account = accountService.findByUsername(authRequest.username)
             ?: throw YggdrasilException(HttpStatus.FORBIDDEN, "ForbiddenOperationException", "Invalid credentials. Invalid username or password")
 
         if (!passwordEncoder.matches(authRequest.password, account.passwordHash)) {
