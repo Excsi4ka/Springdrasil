@@ -1,6 +1,10 @@
 package dev.excsi.springdrasil.service
 
 import dev.excsi.springdrasil.configuration.ConfigurationValues
+import dev.excsi.springdrasil.dto.RefreshRequest
+import dev.excsi.springdrasil.dto.RefreshResponse
+import dev.excsi.springdrasil.dto.ValidateRequest
+import dev.excsi.springdrasil.exception.YggdrasilException
 import dev.excsi.springdrasil.model.Profile
 import dev.excsi.springdrasil.model.SessionToken
 import dev.excsi.springdrasil.model.TokenState
@@ -8,20 +12,21 @@ import dev.excsi.springdrasil.repository.SessionTokenRepository
 import dev.excsi.springdrasil.unhyphenatedString
 import jakarta.persistence.EntityManager
 import jakarta.persistence.LockModeType
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
 import java.util.UUID
 
 @Service
-class SessionService(
+class SessionTokenService(
     val sessionTokenRepository: SessionTokenRepository,
     val configurationValues: ConfigurationValues,
     val entityManager: EntityManager,
 ) {
 
     @Transactional
-    fun createSessionTokenOnAuthentication(suppliedClientToken : String?, profile: Profile): SessionToken {
+    fun issueToken(suppliedClientToken : String?, profile: Profile): SessionToken {
         val maxTokens = configurationValues.maxTokensPerUserInRotation
 
         entityManager.lock(profile, LockModeType.PESSIMISTIC_WRITE)
@@ -50,5 +55,30 @@ class SessionService(
         )
 
         return sessionTokenRepository.save(sessionToken)
+    }
+
+    @Transactional
+    fun validateToken(validateRequest: ValidateRequest) {
+        val sessionToken = sessionTokenRepository.findById(validateRequest.accessToken).orElseThrow {
+            throw YggdrasilException(HttpStatus.FORBIDDEN, "ForbiddenOperationException", "Invalid token")
+        }
+
+        validateRequest.clientToken?.let {
+            if (sessionToken.clientToken != it) {
+                throw YggdrasilException(HttpStatus.FORBIDDEN, "ForbiddenOperationException", "Invalid token")
+            }
+        }
+
+        if (sessionToken.state != TokenState.VALID) {
+            throw YggdrasilException(HttpStatus.FORBIDDEN, "ForbiddenOperationException", "Invalid token")
+        }
+
+        if (sessionToken.expiresAt.isBefore(Instant.now())) {
+            sessionToken.state = TokenState.INVALID
+        }
+    }
+
+    fun refreshToken(refreshRequest: RefreshRequest): RefreshResponse {
+        TODO()
     }
 }

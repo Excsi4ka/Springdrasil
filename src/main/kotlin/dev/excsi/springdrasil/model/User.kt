@@ -9,8 +9,8 @@ import jakarta.persistence.Table
 import java.util.UUID
 
 @Entity
-@Table(name = "accounts")
-class Account(
+@Table(name = "users")
+class User(
 
     @field:Id
     var id: UUID = UUID.randomUUID(),

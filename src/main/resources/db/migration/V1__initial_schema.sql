@@ -6,7 +6,7 @@ CREATE TABLE profiles(
     )
 );
 
-CREATE TABLE accounts(
+CREATE TABLE users(
     id UUID PRIMARY KEY,
     username VARCHAR(64) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
@@ -40,3 +40,6 @@ CREATE TABLE textures(
 
 CREATE INDEX idx_textures_profile_uuid
     ON textures(profile_uuid);
+
+CREATE INDEX idx_textures_texture_hash
+    ON textures(texture_hash);
