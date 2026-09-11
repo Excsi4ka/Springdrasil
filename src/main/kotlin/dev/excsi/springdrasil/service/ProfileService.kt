@@ -9,7 +9,7 @@ import dev.excsi.springdrasil.unhyphenatedString
 import org.springframework.stereotype.Service
 
 @Service
-class SerializationService(
+class ProfileService(
     val textureService: TextureService,
     val configurationValues: ConfigurationValues,
 ) {

@@ -3,7 +3,7 @@ package dev.excsi.springdrasil.service
 import dev.excsi.springdrasil.configuration.ConfigurationValues
 import dev.excsi.springdrasil.dto.RefreshRequest
 import dev.excsi.springdrasil.dto.RefreshResponse
-import dev.excsi.springdrasil.dto.ValidateRequest
+import dev.excsi.springdrasil.dto.TokenStateRequest
 import dev.excsi.springdrasil.exception.YggdrasilException
 import dev.excsi.springdrasil.model.Profile
 import dev.excsi.springdrasil.model.SessionToken
@@ -17,12 +17,13 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
 import java.util.UUID
+import kotlin.jvm.optionals.getOrElse
 
 @Service
 class SessionTokenService(
     val sessionTokenRepository: SessionTokenRepository,
     val configurationValues: ConfigurationValues,
-    val serializationService: SerializationService,
+    val profileService: ProfileService,
     val entityManager: EntityManager,
 ) {
 
@@ -59,7 +60,7 @@ class SessionTokenService(
     }
 
     @Transactional
-    fun validateToken(validateRequest: ValidateRequest) {
+    fun validateToken(validateRequest: TokenStateRequest) {
         validateTokenInternal(validateRequest.accessToken, validateRequest.clientToken)
     }
 
@@ -88,9 +89,9 @@ class SessionTokenService(
         sessionTokenRepository.save(newSessionToken)
         sessionTokenRepository.delete(sessionToken)
 
-        val selectedProfile = serializationService.toProfileDto(profile)
+        val selectedProfile = profileService.toProfileDto(profile)
         val userInfo = if (refreshRequest.requestUser) {
-            profile.user?.let { serializationService.toUserDto(it) }
+            profile.user?.let { profileService.toUserDto(it) }
         } else null
 
         val refreshResponse = RefreshResponse(
@@ -101,6 +102,15 @@ class SessionTokenService(
         )
 
         return refreshResponse
+    }
+
+    @Transactional
+    fun invalidateToken(invalidateRequest: TokenStateRequest) {
+        val sessionToken = sessionTokenRepository.findById(invalidateRequest.accessToken).getOrElse {
+            return
+        }
+
+        sessionToken.state = TokenState.INVALID
     }
 
     private fun validateTokenInternal(accessToken: String, clientToken: String?, allowTemporarilyInvalid: Boolean = false): SessionToken {

@@ -64,7 +64,7 @@ data class TextureData(
     val metadata: Map<String, String>? = null,
 )
 
-data class ValidateRequest(
+data class TokenStateRequest(
     val accessToken: String,
     val clientToken: String? = null,
 )
