@@ -49,7 +49,7 @@ data class ProfileDto(
 )
 
 data class TextureDto(
-    val timestamp: String = Instant.now().toString(),
+    val timestamp: Long = Instant.now().toEpochMilli(),
     val profileId: String,
     val profileName: String,
 
@@ -73,6 +73,7 @@ data class RefreshRequest(
     val accessToken: String,
     val clientToken: String? = null,
     val requestUser: Boolean = false,
+    val selectedProfile: ProfileDto? = null,
 )
 
 data class RefreshResponse(

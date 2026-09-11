@@ -2,11 +2,7 @@ package dev.excsi.springdrasil.service
 
 import dev.excsi.springdrasil.dto.AuthRequest
 import dev.excsi.springdrasil.dto.AuthResponse
-import dev.excsi.springdrasil.dto.ProfileDto
-import dev.excsi.springdrasil.dto.UserDto
 import dev.excsi.springdrasil.exception.YggdrasilException
-import dev.excsi.springdrasil.model.Profile
-import dev.excsi.springdrasil.unhyphenatedString
 import org.springframework.http.HttpStatus
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -16,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional
 class YggdrasilAuthService(
     val userService: UserService,
     val sessionTokenService: SessionTokenService,
+    val serializationService: SerializationService,
     val passwordEncoder: PasswordEncoder,
 ) {
 
@@ -33,12 +30,9 @@ class YggdrasilAuthService(
             user.profile
         )
 
-        val profile = serializeProfile(user.profile)
+        val profile = serializationService.toProfileDto(user.profile)
 
-        val userInfo: UserDto? = if (authRequest.requestUser) UserDto(
-            id = user.id.unhyphenatedString(),
-            properties = emptyList()
-        ) else null
+        val userInfo = if (authRequest.requestUser) serializationService.toUserDto(user) else null
 
         val authResponse = AuthResponse(
             accessToken = sessionToken.accessToken,
@@ -54,13 +48,5 @@ class YggdrasilAuthService(
 
     fun signout() {
         TODO()
-    }
-
-    //only works within a transaction
-    fun serializeProfile(profile: Profile): ProfileDto {
-        return ProfileDto(
-            id = profile.id.unhyphenatedString(),
-            name = profile.profileUsername,
-        )
     }
 }

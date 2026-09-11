@@ -7,6 +7,7 @@ import jakarta.persistence.Enumerated
 import jakarta.persistence.FetchType
 import jakarta.persistence.Id
 import jakarta.persistence.OneToMany
+import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
 import java.util.Locale
 import java.util.UUID
@@ -27,6 +28,9 @@ class Profile(
 
     @field:OneToMany(mappedBy = "profile", fetch = FetchType.LAZY)
     var textures: MutableSet<Texture> = mutableSetOf(),
+
+    @field:OneToOne(mappedBy = "profile", fetch = FetchType.LAZY)
+    var user: User? = null,
 )
 
 enum class SkinType {

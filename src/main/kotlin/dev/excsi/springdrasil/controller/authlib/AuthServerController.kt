@@ -1,4 +1,4 @@
-package dev.excsi.springdrasil.controller
+package dev.excsi.springdrasil.controller.authlib
 
 import dev.excsi.springdrasil.dto.AuthRequest
 import dev.excsi.springdrasil.dto.AuthResponse
@@ -8,10 +8,10 @@ import dev.excsi.springdrasil.dto.ValidateRequest
 import dev.excsi.springdrasil.service.YggdrasilAuthService
 import dev.excsi.springdrasil.service.SessionTokenService
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -34,10 +34,10 @@ class AuthServerController(
         return sessionTokenService.refreshToken(refreshRequest)
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping("validate")
-    fun validate(@RequestBody validateRequest: ValidateRequest): ResponseEntity<Void> {
+    fun validate(@RequestBody validateRequest: ValidateRequest) {
         sessionTokenService.validateToken(validateRequest)
-        return ResponseEntity(HttpStatus.NO_CONTENT)
     }
 
     @PostMapping("invalidate")

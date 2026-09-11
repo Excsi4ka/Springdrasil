@@ -1,4 +1,4 @@
-package dev.excsi.springdrasil.controller
+package dev.excsi.springdrasil.controller.authlib
 
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController

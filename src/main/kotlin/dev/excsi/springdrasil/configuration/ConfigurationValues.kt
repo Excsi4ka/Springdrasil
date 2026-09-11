@@ -8,5 +8,7 @@ data class ConfigurationValues(
 
     val sessionTokenTimeout: Duration,
 
-    val maxTokensPerUserInRotation: Int
+    val maxTokensPerUserInRotation: Int,
+
+    val textureBaseUrl: String
 )
