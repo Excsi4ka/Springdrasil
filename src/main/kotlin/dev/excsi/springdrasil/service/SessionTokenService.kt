@@ -120,6 +120,8 @@ class SessionTokenService(
 
     @Transactional
     fun invalidateAllTokensForProfile(profile: Profile) {
+        entityManager.lock(profile, LockModeType.PESSIMISTIC_WRITE)
+
         val tokenList = sessionTokenRepository.findAllByBoundProfileIdAndStateNot(profile.id, TokenState.INVALID)
 
         tokenList.forEach {
@@ -127,7 +129,30 @@ class SessionTokenService(
         }
     }
 
-    private fun validateTokenInternal(accessToken: String, clientToken: String?, allowTemporarilyInvalid: Boolean = false): SessionToken {
+    @Transactional
+    fun validateTokenAgainstProfile(accessToken: String, profileId: String) {
+        val sessionToken = validateTokenInternal(accessToken)
+
+        val normalizedProfileId = profileId.replace("-", "").lowercase()
+
+        if (sessionToken.boundProfile.id.unhyphenatedString() != normalizedProfileId) {
+            throw YggdrasilException(HttpStatus.FORBIDDEN, "ForbiddenOperationException", "Invalid token")
+        }
+    }
+
+    @Transactional
+    fun validateTokenAgainstUsername(accessToken: String, username: String): Profile {
+        val sessionToken = validateTokenInternal(accessToken)
+        val profile = sessionToken.boundProfile
+
+        if (profile.profileUsername.equals(username, ignoreCase = true)) {
+            throw YggdrasilException(HttpStatus.FORBIDDEN, "ForbiddenOperationException", "Invalid token")
+        }
+
+        return profile
+    }
+
+    private fun validateTokenInternal(accessToken: String, clientToken: String? = null, allowTemporarilyInvalid: Boolean = false): SessionToken {
         val sessionToken = sessionTokenRepository.findById(accessToken).orElseThrow {
             throw YggdrasilException(HttpStatus.FORBIDDEN, "ForbiddenOperationException", "Invalid token")
         }

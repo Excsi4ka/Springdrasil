@@ -9,8 +9,8 @@ class UserService(
     val userRepository: UserRepository
 ) {
 
-    fun findByUsername(username: String) : User? {
-        return userRepository.findByUsername(username)
+    fun findByEmail(email: String) : User? {
+        return userRepository.findByEmail(email)
     }
 
     fun registerUser(email: String, username: String, password: String) {

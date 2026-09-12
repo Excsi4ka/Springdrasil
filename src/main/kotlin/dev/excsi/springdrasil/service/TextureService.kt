@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service
 import tools.jackson.databind.ObjectMapper
 import java.security.MessageDigest
 import java.util.Base64
-import java.util.Locale
 
 @Service
 class TextureService(

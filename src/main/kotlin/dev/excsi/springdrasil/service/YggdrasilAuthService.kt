@@ -19,7 +19,7 @@ class YggdrasilAuthService(
 
     @Transactional
     fun authenticate(authRequest: AuthRequest): AuthResponse {
-        val user = userService.findByUsername(authRequest.username)
+        val user = userService.findByEmail(authRequest.username)
             ?: throw YggdrasilException(HttpStatus.FORBIDDEN, "ForbiddenOperationException", "Invalid credentials. Invalid username or password")
 
         if (!passwordEncoder.matches(authRequest.password, user.passwordHash)) {
@@ -49,7 +49,7 @@ class YggdrasilAuthService(
 
     @Transactional
     fun signout(signoutRequest: SignoutRequest) {
-        val user = userService.findByUsername(signoutRequest.username)
+        val user = userService.findByEmail(signoutRequest.username)
             ?: throw YggdrasilException(HttpStatus.FORBIDDEN, "ForbiddenOperationException", "Invalid credentials. Invalid username or password")
 
         if (!passwordEncoder.matches(signoutRequest.password, user.passwordHash)) {
