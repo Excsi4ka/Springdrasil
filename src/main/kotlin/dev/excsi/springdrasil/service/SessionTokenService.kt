@@ -12,6 +12,7 @@ import dev.excsi.springdrasil.repository.SessionTokenRepository
 import dev.excsi.springdrasil.unhyphenatedString
 import jakarta.persistence.EntityManager
 import jakarta.persistence.LockModeType
+import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -33,12 +34,14 @@ class SessionTokenService(
 
         entityManager.lock(profile, LockModeType.PESSIMISTIC_WRITE)
 
-        val existingTokens = sessionTokenRepository
-            .findAllByBoundProfileIdOrderByIssuedAtAsc(profile.id)
-            .toMutableList()
+        val existingTokens = sessionTokenRepository.findAllByBoundProfileIdAndStateNotOrderByIssuedAtAsc(
+                profile.id,
+                TokenState.INVALID,
+                PageRequest.of(0, maxTokens),
+            ).toMutableList()
 
         while (existingTokens.size >= maxTokens) {
-            sessionTokenRepository.delete(existingTokens.removeFirst())
+            existingTokens.removeFirst().state = TokenState.INVALID
         }
 
         existingTokens.forEach {
@@ -87,11 +90,13 @@ class SessionTokenService(
         )
 
         sessionTokenRepository.save(newSessionToken)
-        sessionTokenRepository.delete(sessionToken)
+        sessionToken.state = TokenState.INVALID
 
         val selectedProfile = profileService.toProfileDto(profile)
         val userInfo = if (refreshRequest.requestUser) {
-            profile.user?.let { profileService.toUserDto(it) }
+            profile.user?.let {
+                profileService.toUserDto(it)
+            }
         } else null
 
         val refreshResponse = RefreshResponse(
@@ -115,9 +120,11 @@ class SessionTokenService(
 
     @Transactional
     fun invalidateAllTokensForProfile(profile: Profile) {
-        val tokenList = sessionTokenRepository.findAllByBoundProfileId(profile.id)
+        val tokenList = sessionTokenRepository.findAllByBoundProfileIdAndStateNot(profile.id, TokenState.INVALID)
 
-        sessionTokenRepository.deleteAll(tokenList)
+        tokenList.forEach {
+            it.state = TokenState.INVALID
+        }
     }
 
     private fun validateTokenInternal(accessToken: String, clientToken: String?, allowTemporarilyInvalid: Boolean = false): SessionToken {
