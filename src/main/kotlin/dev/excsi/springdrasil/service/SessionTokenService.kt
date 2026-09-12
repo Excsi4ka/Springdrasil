@@ -113,6 +113,13 @@ class SessionTokenService(
         sessionToken.state = TokenState.INVALID
     }
 
+    @Transactional
+    fun invalidateAllTokensForProfile(profile: Profile) {
+        val tokenList = sessionTokenRepository.findAllByBoundProfileId(profile.id)
+
+        sessionTokenRepository.deleteAll(tokenList)
+    }
+
     private fun validateTokenInternal(accessToken: String, clientToken: String?, allowTemporarilyInvalid: Boolean = false): SessionToken {
         val sessionToken = sessionTokenRepository.findById(accessToken).orElseThrow {
             throw YggdrasilException(HttpStatus.FORBIDDEN, "ForbiddenOperationException", "Invalid token")

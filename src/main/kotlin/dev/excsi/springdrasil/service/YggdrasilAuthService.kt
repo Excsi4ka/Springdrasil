@@ -2,6 +2,7 @@ package dev.excsi.springdrasil.service
 
 import dev.excsi.springdrasil.dto.AuthRequest
 import dev.excsi.springdrasil.dto.AuthResponse
+import dev.excsi.springdrasil.dto.SignoutRequest
 import dev.excsi.springdrasil.exception.YggdrasilException
 import org.springframework.http.HttpStatus
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -46,7 +47,15 @@ class YggdrasilAuthService(
         return authResponse
     }
 
-    fun signout() {
-        TODO()
+    @Transactional
+    fun signout(signoutRequest: SignoutRequest) {
+        val user = userService.findByUsername(signoutRequest.username)
+            ?: throw YggdrasilException(HttpStatus.FORBIDDEN, "ForbiddenOperationException", "Invalid credentials. Invalid username or password")
+
+        if (!passwordEncoder.matches(signoutRequest.password, user.passwordHash)) {
+            throw YggdrasilException(HttpStatus.FORBIDDEN, "ForbiddenOperationException", "Invalid credentials. Invalid username or password")
+        }
+
+        sessionTokenService.invalidateAllTokensForProfile(user.profile)
     }
 }

@@ -4,6 +4,7 @@ import dev.excsi.springdrasil.dto.AuthRequest
 import dev.excsi.springdrasil.dto.AuthResponse
 import dev.excsi.springdrasil.dto.RefreshRequest
 import dev.excsi.springdrasil.dto.RefreshResponse
+import dev.excsi.springdrasil.dto.SignoutRequest
 import dev.excsi.springdrasil.dto.TokenStateRequest
 import dev.excsi.springdrasil.service.YggdrasilAuthService
 import dev.excsi.springdrasil.service.SessionTokenService
@@ -44,5 +45,11 @@ class AuthServerController(
     @PostMapping("invalidate")
     fun invalidate(@RequestBody invalidateRequest: TokenStateRequest) {
         sessionTokenService.invalidateToken(invalidateRequest)
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PostMapping("signout")
+    fun signout(@RequestBody signoutRequest: SignoutRequest) {
+        authenticationService.signout(signoutRequest)
     }
 }

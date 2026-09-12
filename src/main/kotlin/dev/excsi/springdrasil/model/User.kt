@@ -15,9 +15,8 @@ class User(
     @field:Id
     var id: UUID = UUID.randomUUID(),
 
-    // either email or profile name
-    @field:Column(name = "username", unique = true, nullable = false)
-    var username: String,
+    @field:Column(name = "email", unique = true, nullable = false)
+    var email: String,
 
     @field:Column(name = "password_hash", nullable = false)
     var passwordHash: String,

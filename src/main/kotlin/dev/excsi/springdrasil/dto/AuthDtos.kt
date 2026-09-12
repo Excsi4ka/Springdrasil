@@ -12,6 +12,11 @@ data class AuthRequest(
     val agent: Agent? = Agent()
 )
 
+data class SignoutRequest(
+    val username: String,
+    val password: String,
+)
+
 data class Agent(
     val name: String = "Minecraft",
     val version: Int = 1
