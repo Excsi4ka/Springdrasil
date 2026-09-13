@@ -6,6 +6,8 @@ import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.userdetails.UserDetails
 import java.util.UUID
 
 @Entity
@@ -24,4 +26,17 @@ class User(
     @field:OneToOne(optional = false)
     @field:JoinColumn(name = "profile_uuid", nullable = false)
     var profile: Profile
-)
+) : UserDetails {
+
+    override fun getAuthorities(): Collection<GrantedAuthority> {
+        return emptyList()
+    }
+
+    override fun getPassword(): String? {
+        return passwordHash
+    }
+
+    override fun getUsername(): String {
+        return email
+    }
+}

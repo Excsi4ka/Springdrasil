@@ -19,7 +19,8 @@ class MinecraftSessionService(
     fun join(clientJoinRequest: ClientJoinRequest, servletRequest: HttpServletRequest) {
         sessionTokenService.validateTokenAgainstProfile(clientJoinRequest.accessToken, clientJoinRequest.selectedProfile)
 
-        val ipAddress = extractClientIp(servletRequest)
+        //ideally this should be behind a proxy with proper X-Forwarded-For header
+        val ipAddress = servletRequest.remoteAddr
         val joinSessionData = JoinSessionData(
             ipAddress = ipAddress,
             accessToken = clientJoinRequest.accessToken,
@@ -43,19 +44,5 @@ class MinecraftSessionService(
         } catch (exception: YggdrasilException) {
             null
         }
-    }
-
-    fun extractClientIp(request: HttpServletRequest): String {
-        val forwardedFor = request.getHeader("X-Forwarded-For")
-        if (!forwardedFor.isNullOrBlank()) {
-            return forwardedFor.split(",").first().trim()
-        }
-
-        val realIp = request.getHeader("X-Real-IP")
-        if (!realIp.isNullOrBlank()) {
-            return realIp
-        }
-
-        return request.remoteAddr
     }
 }

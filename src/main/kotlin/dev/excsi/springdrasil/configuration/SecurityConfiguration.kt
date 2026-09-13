@@ -18,6 +18,7 @@ class SecurityConfiguration {
         return http
             .authorizeHttpRequests {
                 it.requestMatchers(
+                    "/",
                     "authserver/**",
                     "sessionserver/**",
                 ).permitAll()

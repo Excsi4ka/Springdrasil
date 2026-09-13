@@ -15,22 +15,14 @@ import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping(
-    "/sessionserver/session/minecraft",
-)
+@RequestMapping("/sessionserver/session/minecraft")
 class SessionServerController(
     val minecraftSessionService: MinecraftSessionService,
 ) {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PostMapping(
-        "join",
-        consumes = ["application/json;charset=UTF-8"]
-    )
-    fun join(
-        @RequestBody clientJoinRequest: ClientJoinRequest,
-        httpServletRequest: HttpServletRequest
-    ) {
+    @PostMapping("join", consumes = ["application/json;charset=UTF-8"])
+    fun join(@RequestBody clientJoinRequest: ClientJoinRequest, httpServletRequest: HttpServletRequest) {
         minecraftSessionService.join(clientJoinRequest, httpServletRequest)
     }
 

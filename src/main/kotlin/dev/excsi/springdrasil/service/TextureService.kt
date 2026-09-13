@@ -15,6 +15,7 @@ import java.util.Base64
 @Service
 class TextureService(
     val objectMapper: ObjectMapper,
+    val yggdrasilSignatureService: YggdrasilSignatureService,
 ) {
 
     fun toTexturesProperty(profile: Profile, textureBaseUrl: String): Property? {
@@ -30,9 +31,12 @@ class TextureService(
             }
         )
 
+        val value = textureDtoToString(textureDto)
+
         return Property(
             name = "textures",
-            value = textureDtoToString(textureDto)
+            value = value,
+            signature = yggdrasilSignatureService.sign(value),
         )
     }
 

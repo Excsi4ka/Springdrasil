@@ -14,7 +14,13 @@ spring:
   flyway:
     enabled: true
 
-custom:
-  sessionTokenTimeout: ${SESSION_TIMEOUT:10d}
-  maxTokensPerUserInRotation: ${MAX_TOKENS_PER_USER:5}
-  textureBaseUrl: ${TEXTURE_BASE_URL}
+server:
+  forward-headers-strategy: framework
+
+springdrasil:
+  application:
+    sessionTokenTimeout: ${SESSION_TIMEOUT:10d}
+    maxTokensPerUserInRotation: ${MAX_TOKENS_PER_USER:5}
+    textureBaseUrl: ${TEXTURE_BASE_URL}
+    yggdrasilSignaturePrivateKey: ${YGGDRASIL_SIGNATURE_PRIVATE_KEY}
+    yggdrasilSignaturePublicKey: ${YGGDRASIL_SIGNATURE_PUBLIC_KEY}
