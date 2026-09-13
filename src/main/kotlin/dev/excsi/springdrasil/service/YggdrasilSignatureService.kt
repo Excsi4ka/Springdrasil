@@ -14,8 +14,8 @@ import java.util.Base64
 class YggdrasilSignatureService(
     configurationValues: ConfigurationValues,
 ) {
-
     private val privateKey = parsePrivateKey(configurationValues.yggdrasilSignaturePrivateKey)
+
     private val publicKey = parsePublicKey(configurationValues.yggdrasilSignaturePublicKey)
 
     val publicKeyPem: String = configurationValues.yggdrasilSignaturePublicKey

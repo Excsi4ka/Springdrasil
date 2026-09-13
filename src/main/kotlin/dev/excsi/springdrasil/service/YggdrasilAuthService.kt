@@ -33,7 +33,7 @@ class YggdrasilAuthService(
 
         val profile = profileService.toProfileDto(user.profile)
 
-        val userInfo = if (authRequest.requestUser) profileService.toUserDto(user) else null
+        val userInfo = if (authRequest.requestUser) userService.toUserDto(user) else null
 
         val authResponse = AuthResponse(
             accessToken = sessionToken.accessToken,

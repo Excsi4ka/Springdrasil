@@ -45,4 +45,14 @@ class MinecraftSessionService(
             null
         }
     }
+
+    @Transactional
+    fun profile(uuid: String, unsigned: Boolean): ProfileDto? {
+        return try {
+            val profile = profileService.getProfileByUUID(uuid)
+            profileService.toProfileDtoWithProperties(profile, !unsigned)
+        } catch (exception: YggdrasilException) {
+            null
+        }
+    }
 }

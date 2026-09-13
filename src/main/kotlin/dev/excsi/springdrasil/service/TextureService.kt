@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service
 import tools.jackson.databind.ObjectMapper
 import java.security.MessageDigest
 import java.util.Base64
+import java.util.LinkedHashMap
 
 @Service
 class TextureService(
@@ -18,17 +19,21 @@ class TextureService(
     val yggdrasilSignatureService: YggdrasilSignatureService,
 ) {
 
-    fun toTexturesProperty(profile: Profile, textureBaseUrl: String): Property? {
+    fun toTexturesProperty(profile: Profile, textureBaseUrl: String, sign: Boolean): Property? {
         if (profile.textures.isEmpty()) {
             return null
+        }
+
+        val textures = LinkedHashMap<TextureType, TextureData>()
+        for (texture in profile.textures) {
+            val textureData = toTextureData(profile, texture, textureBaseUrl)
+            textures[texture.textureType] = textureData
         }
 
         val textureDto = TextureDto(
             profileId = profile.id.unhyphenatedString(),
             profileName = profile.profileUsername,
-            textures = profile.textures.associate { texture ->
-                texture.textureType to toTextureData(profile, texture, textureBaseUrl)
-            }
+            textures = textures,
         )
 
         val value = textureDtoToString(textureDto)
@@ -36,7 +41,7 @@ class TextureService(
         return Property(
             name = "textures",
             value = value,
-            signature = yggdrasilSignatureService.sign(value),
+            signature = if (sign) yggdrasilSignatureService.sign(value) else null,
         )
     }
 
@@ -47,16 +52,24 @@ class TextureService(
 
     fun hashTexture(bytes: ByteArray): String {
         val digest = MessageDigest.getInstance("SHA-256").digest(bytes)
+        val hash = StringBuilder()
 
-        return digest.joinToString("") {
-            byte -> "%02x".format(byte)
+        for (byte in digest) {
+            hash.append("%02x".format(byte))
         }
+
+        return hash.toString()
     }
 
     private fun toTextureData(profile: Profile, texture: Texture, textureBaseUrl: String): TextureData {
-        val metadata = if (texture.textureType == TextureType.SKIN) {
-            mapOf("model" to profile.skinType.name())
-        } else null
+        val metadata: Map<String, String>?
+        if (texture.textureType == TextureType.SKIN) {
+            val skinMetadata = HashMap<String, String>()
+            skinMetadata["model"] = profile.skinType.name()
+            metadata = skinMetadata
+        } else {
+            metadata = null
+        }
 
         return TextureData(
             url = textureUrl(textureBaseUrl, texture.textureHash),

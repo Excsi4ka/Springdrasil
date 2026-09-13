@@ -26,6 +26,7 @@ class SessionTokenService(
     val configurationValues: ConfigurationValues,
     val profileService: ProfileService,
     val entityManager: EntityManager,
+    val userService: UserService,
 ) {
 
     @Transactional
@@ -95,7 +96,7 @@ class SessionTokenService(
         val selectedProfile = profileService.toProfileDto(profile)
         val userInfo = if (refreshRequest.requestUser) {
             profile.user?.let {
-                profileService.toUserDto(it)
+                userService.toUserDto(it)
             }
         } else null
 

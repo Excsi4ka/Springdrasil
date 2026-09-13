@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -33,6 +34,17 @@ class SessionServerController(
         @RequestParam(name = "ip", required = false) ip: String?,
     ): ResponseEntity<ProfileDto> {
         val profile = minecraftSessionService.hasJoined(username, serverId, ip)
+            ?: return ResponseEntity(HttpStatus.NO_CONTENT)
+
+        return ResponseEntity.ok(profile)
+    }
+
+    @GetMapping("profile/{uuid}")
+    fun profile(
+        @PathVariable uuid: String,
+        @RequestParam(name = "unsigned", defaultValue = "true") unsigned: Boolean,
+    ): ResponseEntity<ProfileDto> {
+        val profile = minecraftSessionService.profile(uuid, unsigned)
             ?: return ResponseEntity(HttpStatus.NO_CONTENT)
 
         return ResponseEntity.ok(profile)

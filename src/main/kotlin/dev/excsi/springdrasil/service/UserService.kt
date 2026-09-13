@@ -1,7 +1,9 @@
 package dev.excsi.springdrasil.service
 
+import dev.excsi.springdrasil.dto.UserDto
 import dev.excsi.springdrasil.model.User
 import dev.excsi.springdrasil.repository.UserRepository
+import dev.excsi.springdrasil.unhyphenatedString
 import org.springframework.stereotype.Service
 
 @Service
@@ -19,5 +21,12 @@ class UserService(
 
     fun changePassword(username: String, oldPassword: String, newPassword: String) {
         TODO()
+    }
+
+    fun toUserDto(user: User): UserDto {
+        return UserDto(
+            id = user.id.unhyphenatedString(),
+            properties = emptyList()
+        )
     }
 }
