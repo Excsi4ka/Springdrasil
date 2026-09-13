@@ -3,10 +3,13 @@ package dev.excsi.springdrasil.service
 import dev.excsi.springdrasil.dto.Property
 import dev.excsi.springdrasil.dto.TextureData
 import dev.excsi.springdrasil.dto.TextureDto
+import dev.excsi.springdrasil.exception.YggdrasilException
 import dev.excsi.springdrasil.model.Profile
 import dev.excsi.springdrasil.model.Texture
 import dev.excsi.springdrasil.model.TextureType
+import dev.excsi.springdrasil.repository.TextureRepository
 import dev.excsi.springdrasil.unhyphenatedString
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import tools.jackson.databind.ObjectMapper
 import java.security.MessageDigest
@@ -17,7 +20,13 @@ import java.util.LinkedHashMap
 class TextureService(
     val objectMapper: ObjectMapper,
     val yggdrasilSignatureService: YggdrasilSignatureService,
+    val textureRepository: TextureRepository
 ) {
+
+    fun getTexture(textureHash: String): Texture {
+        return textureRepository.findTextureByTextureHash(textureHash)
+            ?: throw YggdrasilException(HttpStatus.NOT_FOUND, "TextureNotFound", "Texture not found.")
+    }
 
     fun toTexturesProperty(profile: Profile, textureBaseUrl: String, sign: Boolean): Property? {
         if (profile.textures.isEmpty()) {

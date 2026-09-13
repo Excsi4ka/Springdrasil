@@ -131,14 +131,17 @@ class SessionTokenService(
     }
 
     @Transactional
-    fun validateTokenAgainstProfile(accessToken: String, profileId: String) {
+    fun validateTokenAgainstProfileId(accessToken: String, profileId: String): Profile {
         val sessionToken = validateTokenInternal(accessToken)
+        val profile = sessionToken.boundProfile
 
         val normalizedProfileId = profileId.replace("-", "").lowercase()
 
-        if (sessionToken.boundProfile.id.unhyphenatedString() != normalizedProfileId) {
+        if (profile.id.unhyphenatedString() != normalizedProfileId) {
             throw YggdrasilException(HttpStatus.FORBIDDEN, "ForbiddenOperationException", "Invalid token")
         }
+
+        return profile
     }
 
     @Transactional

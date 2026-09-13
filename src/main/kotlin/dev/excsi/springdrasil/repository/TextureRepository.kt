@@ -5,4 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 import java.util.UUID
 
 interface TextureRepository : JpaRepository<Texture, UUID> {
+
+    fun findTextureByTextureHash(textureHash: String): Texture?
 }

@@ -17,7 +17,7 @@ class MinecraftSessionService(
 ) {
 
     fun join(clientJoinRequest: ClientJoinRequest, servletRequest: HttpServletRequest) {
-        sessionTokenService.validateTokenAgainstProfile(clientJoinRequest.accessToken, clientJoinRequest.selectedProfile)
+        sessionTokenService.validateTokenAgainstProfileId(clientJoinRequest.accessToken, clientJoinRequest.selectedProfile)
 
         //ideally this should be behind a proxy with proper X-Forwarded-For header
         val ipAddress = servletRequest.remoteAddr
@@ -51,7 +51,7 @@ class MinecraftSessionService(
         return try {
             val profile = profileService.getProfileByUUID(uuid)
             profileService.toProfileDtoWithProperties(profile, !unsigned)
-        } catch (exception: YggdrasilException) {
+        } catch (exception: Exception) {
             null
         }
     }
