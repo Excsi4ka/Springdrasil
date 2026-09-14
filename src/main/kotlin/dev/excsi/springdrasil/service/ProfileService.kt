@@ -26,6 +26,18 @@ class ProfileService(
         }
     }
 
+    fun queryProfiles(usernames: List<String>): List<ProfileDto> {
+        val list = mutableListOf<ProfileDto>()
+        for (username in usernames) {
+            val profile = profileRepository.findByProfileUsername(username)
+            profile?.let {
+                list.add(toProfileDto(profile))
+            }
+        }
+
+        return list
+    }
+
     fun toProfileDto(profile: Profile): ProfileDto {
         return ProfileDto(
             id = profile.id.unhyphenatedString(),

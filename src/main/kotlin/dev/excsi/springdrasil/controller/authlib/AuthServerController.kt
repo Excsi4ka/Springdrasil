@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping(
-    "/authserver",
+    $$"${springdrasil.application.authlib-prefix}/authserver",
     consumes = ["application/json;charset=UTF-8"]
 )
 class AuthServerController(

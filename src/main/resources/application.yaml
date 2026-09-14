@@ -19,8 +19,10 @@ server:
 
 springdrasil:
   application:
-    sessionTokenTimeout: ${SESSION_TIMEOUT:10d}
-    maxTokensPerUserInRotation: ${MAX_TOKENS_PER_USER:5}
-    textureBaseUrl: ${TEXTURE_BASE_URL}
-    yggdrasilSignaturePrivateKey: ${YGGDRASIL_SIGNATURE_PRIVATE_KEY}
-    yggdrasilSignaturePublicKey: ${YGGDRASIL_SIGNATURE_PUBLIC_KEY}
+    session-token-timeout: ${SESSION_TIMEOUT:10d}
+    max-tokens-per-user-in-rotation: ${MAX_TOKENS_PER_USER:5}
+    texture-base-url: ${TEXTURE_BASE_URL}
+    yggdrasil-signature-private-key: ${YGGDRASIL_SIGNATURE_PRIVATE_KEY}
+    yggdrasil-signature-public-key: ${YGGDRASIL_SIGNATURE_PUBLIC_KEY}
+    web-enabled: ${WEB_ENABLED:true}
+    authlib-prefix: ${AUTHLIB_PREFIX:/authlib}
