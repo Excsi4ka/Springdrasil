@@ -21,6 +21,7 @@ springdrasil:
   application:
     session-token-timeout: ${SESSION_TIMEOUT:10d}
     max-tokens-per-user-in-rotation: ${MAX_TOKENS_PER_USER:5}
+    max-profiles-per-request: ${MAX_PROFILES_PER_REQUEST:10}
     texture-base-url: ${TEXTURE_BASE_URL}
     yggdrasil-signature-private-key: ${YGGDRASIL_SIGNATURE_PRIVATE_KEY}
     yggdrasil-signature-public-key: ${YGGDRASIL_SIGNATURE_PUBLIC_KEY}

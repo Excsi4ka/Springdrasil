@@ -1,8 +1,8 @@
 CREATE TABLE profiles(
     id UUID PRIMARY KEY,
     profile_username VARCHAR(32) UNIQUE NOT NULL,
-    skin_type VARCHAR(32) NOT NULL CHECK (
-        skin_type IN ('DEFAULT', 'SLIM')
+    skin_model VARCHAR(32) NOT NULL CHECK (
+        skin_model IN ('DEFAULT', 'SLIM')
     )
 );
 
@@ -35,7 +35,9 @@ CREATE TABLE textures(
     ),
     texture_hash VARCHAR(255) NOT NULL,
     skin_bytes BYTEA NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE NOT NULL
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    CONSTRAINT uk_textures_profile_uuid_texture_type
+        UNIQUE (profile_uuid, texture_type)
 );
 
 CREATE INDEX idx_textures_profile_uuid

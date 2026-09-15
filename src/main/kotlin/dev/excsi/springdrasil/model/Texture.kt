@@ -9,11 +9,20 @@ import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
+import jakarta.persistence.UniqueConstraint
 import java.time.Instant
 import java.util.UUID
 
 @Entity
-@Table(name = "textures")
+@Table(
+    name = "textures",
+    uniqueConstraints = [
+        UniqueConstraint(
+            name = "uk_textures_profile_uuid_texture_type",
+            columnNames = ["profile_uuid", "texture_type"],
+        ),
+    ],
+)
 class Texture(
 
     @field:Id

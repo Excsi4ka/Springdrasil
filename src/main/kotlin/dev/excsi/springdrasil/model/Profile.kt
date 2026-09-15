@@ -23,8 +23,8 @@ class Profile(
     var profileUsername: String,
 
     @field:Enumerated(EnumType.STRING)
-    @field:Column(name = "skin_type", nullable = false)
-    var skinType: SkinType = SkinType.DEFAULT,
+    @field:Column(name = "skin_model", nullable = false)
+    var skinModel: SkinModel = SkinModel.DEFAULT,
 
     @field:OneToMany(mappedBy = "profile", fetch = FetchType.LAZY)
     var textures: MutableSet<Texture> = mutableSetOf(),
@@ -33,7 +33,7 @@ class Profile(
     var user: User? = null,
 )
 
-enum class SkinType {
+enum class SkinModel {
 
     DEFAULT,
 

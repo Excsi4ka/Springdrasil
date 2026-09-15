@@ -4,12 +4,13 @@ import dev.excsi.springdrasil.configuration.ConfigurationValues
 import dev.excsi.springdrasil.dto.ProfileDto
 import dev.excsi.springdrasil.dto.Property
 import dev.excsi.springdrasil.exception.YggdrasilException
+import dev.excsi.springdrasil.isUnhyphenatedUuidValid
 import dev.excsi.springdrasil.model.Profile
 import dev.excsi.springdrasil.repository.ProfileRepository
+import dev.excsi.springdrasil.toUuid
 import dev.excsi.springdrasil.unhyphenatedString
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
-import java.util.UUID
 
 @Service
 class ProfileService(
@@ -20,13 +21,21 @@ class ProfileService(
 ) {
 
     fun getProfileByUUID(uuid: String): Profile {
-        val id = unhyphenatedToUuid(uuid)
-        return profileRepository.findById(id).orElseThrow {
+        if (!uuid.isUnhyphenatedUuidValid()) {
+            throw YggdrasilException(HttpStatus.FORBIDDEN, "IllegalArgumentException", "Unhyphenated UUID required.")
+        }
+
+        return profileRepository.findById(uuid.toUuid()).orElseThrow {
             throw YggdrasilException(HttpStatus.NOT_FOUND, "Profile not found")
         }
     }
 
     fun queryProfiles(usernames: List<String>): List<ProfileDto> {
+        val count = usernames.size
+        if (count < 2 || count > configurationValues.maxProfilesPerRequest) {
+            return emptyList()
+        }
+
         val list = mutableListOf<ProfileDto>()
         for (username in usernames) {
             val profile = profileRepository.findByProfileUsername(username)
@@ -61,19 +70,5 @@ class ProfileService(
             name = profile.profileUsername,
             properties = properties,
         )
-    }
-
-    fun unhyphenatedToUuid(value: String): UUID {
-        require(value.matches(Regex("[0-9a-fA-F]{32}"))) {
-            "Invalid unhyphenated UUID: $value"
-        }
-
-        val hyphenated = value.substring(0, 8) + "-" +
-                value.substring(8, 12) + "-" +
-                value.substring(12, 16) + "-" +
-                value.substring(16, 20) + "-" +
-                value.substring(20, 32)
-
-        return UUID.fromString(hyphenated)
     }
 }

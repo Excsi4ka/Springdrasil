@@ -16,6 +16,20 @@ fun main(args: Array<String>) {
 	runApplication<SpringdrasilApplication>(*args)
 }
 
+private val unhyphenatedUuidRegex = Regex("[0-9a-fA-F]{32}")
+
 fun UUID.unhyphenatedString(): String {
 	return this.toString().replace("-", "")
+}
+
+fun String.isUnhyphenatedUuidValid(): Boolean = this.matches(unhyphenatedUuidRegex)
+
+fun String.toUuid(): UUID {
+	val hyphenated = substring(0, 8) + "-" +
+			substring(8, 12) + "-" +
+			substring(12, 16) + "-" +
+			substring(16, 20) + "-" +
+			substring(20, 32)
+
+	return UUID.fromString(hyphenated)
 }

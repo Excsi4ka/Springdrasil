@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping($$"${springdrasil.application.authlib-prefix}")
 class ApiMetadataController(
-    private val yggdrasilSignatureService: YggdrasilSignatureService,
+    val yggdrasilSignatureService: YggdrasilSignatureService,
 ) {
 
     @GetMapping("/", "")

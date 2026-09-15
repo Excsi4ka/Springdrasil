@@ -10,6 +10,8 @@ data class ConfigurationValues(
 
     val maxTokensPerUserInRotation: Int,
 
+    val maxProfilesPerRequest: Int,
+
     val textureBaseUrl: String,
 
     val yggdrasilSignaturePrivateKey: String,
