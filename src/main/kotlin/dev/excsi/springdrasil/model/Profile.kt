@@ -39,7 +39,7 @@ enum class SkinModel {
 
     SLIM;
 
-    fun name(): String {
+    fun nameLowercase(): String {
         return name.lowercase(Locale.getDefault())
     }
 }

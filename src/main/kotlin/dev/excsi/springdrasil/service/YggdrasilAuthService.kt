@@ -31,7 +31,7 @@ class YggdrasilAuthService(
             user.profile
         )
 
-        val profile = profileService.toProfileDto(user.profile)
+        val profile = profileService.serializeProfile(user.profile)
 
         val userInfo = if (authRequest.requestUser) userService.toUserDto(user) else null
 

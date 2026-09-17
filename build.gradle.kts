@@ -27,6 +27,7 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("tools.jackson.module:jackson-module-kotlin")
 	implementation("org.springframework.boot:spring-boot-starter-flyway")
+	implementation("org.flywaydb:flyway-database-postgresql")
 	implementation("com.github.ben-manes.caffeine:caffeine")
 	runtimeOnly("org.postgresql:postgresql")
 	testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
@@ -50,4 +51,8 @@ allOpen {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+tasks.named<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
+	archiveFileName.set("app.jar")
 }

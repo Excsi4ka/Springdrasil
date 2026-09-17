@@ -93,7 +93,7 @@ class SessionTokenService(
         sessionTokenRepository.save(newSessionToken)
         sessionToken.state = TokenState.INVALID
 
-        val selectedProfile = profileService.toProfileDto(profile)
+        val selectedProfile = profileService.serializeProfile(profile)
         val userInfo = if (refreshRequest.requestUser) {
             profile.user?.let {
                 userService.toUserDto(it)

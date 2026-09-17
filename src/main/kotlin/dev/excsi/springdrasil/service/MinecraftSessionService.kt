@@ -40,7 +40,7 @@ class MinecraftSessionService(
 
         return try {
             val profile = sessionTokenService.validateTokenAgainstUsername(joinData.accessToken, username)
-            profileService.toProfileDtoWithProperties(profile)
+            profileService.serializeProfileWithProperties(profile)
         } catch (exception: YggdrasilException) {
             null
         }
@@ -50,7 +50,7 @@ class MinecraftSessionService(
     fun profile(uuid: String, unsigned: Boolean): ProfileDto? {
         return try {
             val profile = profileService.getProfileByUUID(uuid)
-            profileService.toProfileDtoWithProperties(profile, !unsigned)
+            profileService.serializeProfileWithProperties(profile, !unsigned)
         } catch (exception: Exception) {
             null
         }
