@@ -62,7 +62,7 @@ class ProfileService(
     }
 
     fun serializeProfileWithProperties(profile: Profile, sign: Boolean = true): ProfileDto {
-        val textureBaseUrl = configurationValues.textureBaseUrl
+        val textureBaseUrl = configurationValues.baseDomainUrl
         val textureMap = LinkedHashMap<TextureType, TextureData>()
 
         for (texture in profile.textures) {

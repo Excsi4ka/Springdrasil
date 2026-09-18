@@ -22,8 +22,13 @@ class SecurityConfiguration(
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         return http
             .authorizeHttpRequests {
+                val prefix = if (authLibPrefix.startsWith("/"))
+                    authLibPrefix
+                else
+                    "/$authLibPrefix"
+
                 it.requestMatchers(
-                    "$authLibPrefix/**",
+                    "$prefix/**",
                 ).permitAll()
 
             }

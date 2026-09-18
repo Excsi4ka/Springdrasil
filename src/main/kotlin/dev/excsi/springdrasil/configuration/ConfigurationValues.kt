@@ -12,7 +12,7 @@ data class ConfigurationValues(
 
     val maxProfilesPerRequest: Int,
 
-    val textureBaseUrl: String,
+    val baseDomainUrl: String,
 
     val yggdrasilSignaturePrivateKey: String,
 
