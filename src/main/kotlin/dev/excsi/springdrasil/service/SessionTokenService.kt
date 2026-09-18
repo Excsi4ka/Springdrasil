@@ -1,6 +1,7 @@
 package dev.excsi.springdrasil.service
 
 import dev.excsi.springdrasil.configuration.ConfigurationValues
+import dev.excsi.springdrasil.dto.ProfileDto
 import dev.excsi.springdrasil.dto.RefreshRequest
 import dev.excsi.springdrasil.dto.RefreshResponse
 import dev.excsi.springdrasil.dto.TokenStateRequest
@@ -24,7 +25,6 @@ import kotlin.jvm.optionals.getOrElse
 class SessionTokenService(
     val sessionTokenRepository: SessionTokenRepository,
     val configurationValues: ConfigurationValues,
-    val profileService: ProfileService,
     val entityManager: EntityManager,
     val userService: UserService,
 ) {
@@ -93,7 +93,10 @@ class SessionTokenService(
         sessionTokenRepository.save(newSessionToken)
         sessionToken.state = TokenState.INVALID
 
-        val selectedProfile = profileService.serializeProfile(profile)
+        val selectedProfile = ProfileDto(
+            id = profile.id.unhyphenatedString(),
+            name = profile.profileUsername,
+        )
         val userInfo = if (refreshRequest.requestUser) {
             profile.user?.let {
                 userService.toUserDto(it)
@@ -149,7 +152,7 @@ class SessionTokenService(
         val sessionToken = validateTokenInternal(accessToken)
         val profile = sessionToken.boundProfile
 
-        if (profile.profileUsername.equals(username, ignoreCase = true)) {
+        if (!profile.profileUsername.equals(username, ignoreCase = true)) {
             throw YggdrasilException(HttpStatus.FORBIDDEN, "ForbiddenOperationException", "Invalid token")
         }
 
