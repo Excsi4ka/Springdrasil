@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping($$"${springdrasil.application.authlib-prefix}/sessionserver/session/minecraft")
+@RequestMapping($$"${springdrasil.authlib.prefix}/sessionserver/session/minecraft")
 class SessionServerController(
     val minecraftSessionService: MinecraftSessionService,
 ) {

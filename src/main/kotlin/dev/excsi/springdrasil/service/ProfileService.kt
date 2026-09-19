@@ -1,6 +1,6 @@
 package dev.excsi.springdrasil.service
 
-import dev.excsi.springdrasil.configuration.ConfigurationValues
+import dev.excsi.springdrasil.configuration.AuthlibConfigurationValues
 import dev.excsi.springdrasil.dto.ProfileDto
 import dev.excsi.springdrasil.dto.Property
 import dev.excsi.springdrasil.dto.TextureData
@@ -23,7 +23,7 @@ import java.util.LinkedHashMap
 class ProfileService(
     val profileRepository: ProfileRepository,
     val objectMapper: ObjectMapper,
-    val configurationValues: ConfigurationValues,
+    val authlibConfigurationValues: AuthlibConfigurationValues,
     val yggdrasilSignatureService: YggdrasilSignatureService,
 ) {
 
@@ -39,7 +39,7 @@ class ProfileService(
 
     fun queryProfiles(usernames: List<String>): List<ProfileDto> {
         val count = usernames.size
-        if (count < 2 || count > configurationValues.maxProfilesPerRequest) {
+        if (count < 2 || count > authlibConfigurationValues.maxProfilesPerRequest) {
             return emptyList()
         }
 
@@ -62,7 +62,7 @@ class ProfileService(
     }
 
     fun serializeProfileWithProperties(profile: Profile, sign: Boolean = true): ProfileDto {
-        val textureBaseUrl = configurationValues.baseDomainUrl
+        val textureBaseUrl = authlibConfigurationValues.baseDomainUrl
         val textureMap = LinkedHashMap<TextureType, TextureData>()
 
         for (texture in profile.textures) {

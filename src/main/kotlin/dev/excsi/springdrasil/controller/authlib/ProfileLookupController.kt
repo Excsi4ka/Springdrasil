@@ -8,12 +8,12 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping($$"${springdrasil.application.authlib-prefix}/api/profiles/minecraft")
+@RequestMapping($$"${springdrasil.authlib.prefix}/api/profiles/minecraft")
 class ProfileLookupController(
     val profileService: ProfileService
 ) {
 
-    @PostMapping("/")
+    @PostMapping("", "/")
     fun queryProfiles(@RequestBody usernames: List<String>): List<ProfileDto> {
         return profileService.queryProfiles(usernames)
     }

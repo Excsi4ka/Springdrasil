@@ -18,12 +18,17 @@ server:
   forward-headers-strategy: framework
 
 springdrasil:
-  application:
+  authlib:
+    prefix: ${AUTHLIB_PREFIX:authlib}
     session-token-timeout: ${SESSION_TIMEOUT:10d}
     max-tokens-per-user-in-rotation: ${MAX_TOKENS_PER_USER:5}
     max-profiles-per-request: ${MAX_PROFILES_PER_REQUEST:10}
     base-domain-url: ${BASE_DOMAIN_URL}
     yggdrasil-signature-private-key: ${YGGDRASIL_SIGNATURE_PRIVATE_KEY}
     yggdrasil-signature-public-key: ${YGGDRASIL_SIGNATURE_PUBLIC_KEY}
-    web-enabled: ${WEB_ENABLED:true}
-    authlib-prefix: ${AUTHLIB_PREFIX:authlib}
+
+  jwt:
+    secret-key: ${JWT_SECRET_KEY:}
+
+  web:
+    enabled: ${WEB_ENABLED:true}

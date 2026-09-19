@@ -1,6 +1,6 @@
 package dev.excsi.springdrasil.service
 
-import dev.excsi.springdrasil.configuration.ConfigurationValues
+import dev.excsi.springdrasil.configuration.AuthlibConfigurationValues
 import dev.excsi.springdrasil.dto.ProfileDto
 import dev.excsi.springdrasil.dto.RefreshRequest
 import dev.excsi.springdrasil.dto.RefreshResponse
@@ -24,14 +24,14 @@ import kotlin.jvm.optionals.getOrElse
 @Service
 class SessionTokenService(
     val sessionTokenRepository: SessionTokenRepository,
-    val configurationValues: ConfigurationValues,
+    val authlibConfigurationValues: AuthlibConfigurationValues,
     val entityManager: EntityManager,
     val userService: UserService,
 ) {
 
     @Transactional
     fun issueToken(suppliedClientToken : String?, profile: Profile): SessionToken {
-        val maxTokens = configurationValues.maxTokensPerUserInRotation
+        val maxTokens = authlibConfigurationValues.maxTokensPerUserInRotation
 
         entityManager.lock(profile, LockModeType.PESSIMISTIC_WRITE)
 
@@ -51,7 +51,7 @@ class SessionTokenService(
 
         val accessToken = UUID.randomUUID().unhyphenatedString()
         val clientToken = suppliedClientToken ?: UUID.randomUUID().unhyphenatedString()
-        val expiresAt = Instant.now().plus(configurationValues.sessionTokenTimeout)
+        val expiresAt = Instant.now().plus(authlibConfigurationValues.sessionTokenTimeout)
 
         val sessionToken = SessionToken(
             accessToken = accessToken,
@@ -81,7 +81,7 @@ class SessionTokenService(
 
         val accessToken = UUID.randomUUID().unhyphenatedString()
         val clientToken = sessionToken.clientToken
-        val expiresAt = Instant.now().plus(configurationValues.sessionTokenTimeout)
+        val expiresAt = Instant.now().plus(authlibConfigurationValues.sessionTokenTimeout)
 
         val newSessionToken = SessionToken(
             accessToken = accessToken,
