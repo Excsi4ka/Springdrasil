@@ -1,4 +1,4 @@
-package dev.excsi.springdrasil.service
+package dev.excsi.springdrasil.service.texture
 
 import dev.excsi.springdrasil.exception.YggdrasilException
 import dev.excsi.springdrasil.isUnhyphenatedUuidValid
@@ -6,6 +6,7 @@ import dev.excsi.springdrasil.model.SkinModel
 import dev.excsi.springdrasil.model.Texture
 import dev.excsi.springdrasil.model.TextureType
 import dev.excsi.springdrasil.repository.TextureRepository
+import dev.excsi.springdrasil.service.yggdrasil.SessionValidationService
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -15,7 +16,7 @@ import java.security.MessageDigest
 @Service
 class TextureService(
     val textureRepository: TextureRepository,
-    val sessionTokenService: SessionTokenService,
+    val sessionValidationService: SessionValidationService,
 ) {
 
     @Transactional
@@ -31,7 +32,7 @@ class TextureService(
         }
         val accessToken = sanitizeAuthorizationHeader(authorizationHeader)
 
-        val profile = sessionTokenService.validateTokenAgainstProfileId(accessToken, uuid)
+        val profile = sessionValidationService.validateTokenAgainstProfileId(accessToken, uuid)
 
 
 
@@ -71,7 +72,7 @@ class TextureService(
         }
         val accessToken = sanitizeAuthorizationHeader(authorizationHeader)
 
-        val profile = sessionTokenService.validateTokenAgainstProfileId(accessToken, uuid)
+        val profile = sessionValidationService.validateTokenAgainstProfileId(accessToken, uuid)
         val texture = profile.textures.firstOrNull {
             it.textureType == textureType
         }

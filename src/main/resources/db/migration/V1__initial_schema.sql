@@ -10,7 +10,14 @@ CREATE TABLE users(
     id UUID PRIMARY KEY,
     email VARCHAR(64) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
-    profile_uuid UUID UNIQUE NOT NULL REFERENCES profiles (id)
+    profile_uuid UUID UNIQUE NOT NULL REFERENCES profiles (id),
+    role VARCHAR(32) NOT NULL CHECK (
+        role IN ('USER', 'ADMIN')
+    ),
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    status VARCHAR(32) NOT NULL CHECK (
+        role IN ('ACTIVE', 'DELETED', 'UNVERIFIED')
+    )
 );
 
 CREATE TABLE session_tokens (

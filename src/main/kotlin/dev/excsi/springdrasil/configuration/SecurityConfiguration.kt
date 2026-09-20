@@ -3,7 +3,7 @@ package dev.excsi.springdrasil.configuration
 import com.nimbusds.jose.jwk.source.ImmutableSecret
 import com.nimbusds.jose.jwk.source.JWKSource
 import com.nimbusds.jose.proc.SecurityContext
-import dev.excsi.springdrasil.component.ConditionalOnWebEnabled
+import dev.excsi.springdrasil.repository.UserRepository
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -13,6 +13,8 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.core.userdetails.UserDetailsService
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.oauth2.jwt.JwtDecoder
@@ -41,7 +43,16 @@ class SecurityConfiguration(
                 val prefix = authLibPrefix.trim('/')
                 it.requestMatchers(
                     "$prefix/**",
+                    "/admin",
+                    "/admin/login",
+                    "/admin/dashboard/**",
+                    "/api/auth/login",
+                    "/api/auth/refresh",
                 ).permitAll()
+
+                it.requestMatchers(
+                    "/admin/api/**"
+                ).hasRole("ADMIN")
             }
             .csrf {
                 it.disable()
@@ -62,22 +73,26 @@ class SecurityConfiguration(
 
     // AuthenticationManager might not always be injectable, supposedly, so just in case
     @Bean
-    @ConditionalOnWebEnabled
     fun authenticationManager(config: AuthenticationConfiguration): AuthenticationManager? {
         return config.getAuthenticationManager()
     }
 
     @Bean
-    @ConditionalOnWebEnabled
     fun jwtDecoder(): JwtDecoder {
         return NimbusJwtDecoder.withSecretKey(getSecretKeySpec()).build()
     }
 
     @Bean
-    @ConditionalOnWebEnabled
     fun jwtEncoder(): JwtEncoder {
         val jwks: JWKSource<SecurityContext> = ImmutableSecret(getSecretKeySpec())
         return NimbusJwtEncoder(jwks)
+    }
+
+    @Bean
+    fun userDetailsService(userRepository: UserRepository): UserDetailsService {
+        return UserDetailsService {
+            userRepository.findByEmail(it) ?: throw UsernameNotFoundException("User not found")
+        }
     }
 
     private fun getSecretKeySpec(): SecretKeySpec {

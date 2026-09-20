@@ -1,28 +1,28 @@
-package dev.excsi.springdrasil.service
+package dev.excsi.springdrasil.service.yggdrasil
 
 import com.github.benmanes.caffeine.cache.Cache
 import dev.excsi.springdrasil.dto.ClientJoinRequest
 import dev.excsi.springdrasil.dto.JoinSessionData
 import dev.excsi.springdrasil.dto.ProfileDto
 import dev.excsi.springdrasil.exception.YggdrasilException
-import jakarta.servlet.http.HttpServletRequest
+import dev.excsi.springdrasil.service.profile.ProfileSerializationService
+import dev.excsi.springdrasil.service.profile.ProfileService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class MinecraftSessionService(
     val joinSessionCache: Cache<String, JoinSessionData>,
-    val sessionTokenService: SessionTokenService,
+    val sessionValidationService: SessionValidationService,
     val profileService: ProfileService,
+    val profileSerializationService: ProfileSerializationService
 ) {
 
-    fun join(clientJoinRequest: ClientJoinRequest, servletRequest: HttpServletRequest) {
-        sessionTokenService.validateTokenAgainstProfileId(clientJoinRequest.accessToken, clientJoinRequest.selectedProfile)
+    fun join(clientJoinRequest: ClientJoinRequest, remoteAddress: String) {
+        sessionValidationService.validateTokenAgainstProfileId(clientJoinRequest.accessToken, clientJoinRequest.selectedProfile)
 
-        //ideally this should be behind a proxy with proper X-Forwarded-For header
-        val ipAddress = servletRequest.remoteAddr
         val joinSessionData = JoinSessionData(
-            ipAddress = ipAddress,
+            ipAddress = remoteAddress,
             accessToken = clientJoinRequest.accessToken,
             serverId = clientJoinRequest.serverId,
         )
@@ -39,8 +39,8 @@ class MinecraftSessionService(
         }
 
         return try {
-            val profile = sessionTokenService.validateTokenAgainstUsername(joinData.accessToken, username)
-            profileService.serializeProfileWithProperties(profile)
+            val profile = sessionValidationService.validateTokenAgainstUsername(joinData.accessToken, username)
+            profileSerializationService.serializeProfileWithProperties(profile)
         } catch (exception: YggdrasilException) {
             null
         }
@@ -50,7 +50,7 @@ class MinecraftSessionService(
     fun profile(uuid: String, unsigned: Boolean): ProfileDto? {
         return try {
             val profile = profileService.getProfileByUUID(uuid)
-            profileService.serializeProfileWithProperties(profile, !unsigned)
+            profileSerializationService.serializeProfileWithProperties(profile, !unsigned)
         } catch (exception: Exception) {
             null
         }

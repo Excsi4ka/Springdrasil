@@ -2,7 +2,7 @@ package dev.excsi.springdrasil.controller.authlib
 
 import dev.excsi.springdrasil.configuration.AuthlibConfigurationValues
 import dev.excsi.springdrasil.dto.ApiMetadataResponse
-import dev.excsi.springdrasil.service.YggdrasilSignatureService
+import dev.excsi.springdrasil.service.SignatureService
 import org.springframework.boot.info.BuildProperties
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping($$"${springdrasil.authlib.prefix}")
 class ApiMetadataController(
     val authlibConfigurationValues: AuthlibConfigurationValues,
-    val yggdrasilSignatureService: YggdrasilSignatureService,
+    val signatureService: SignatureService,
     val buildProperties: BuildProperties
 ) {
 
@@ -34,7 +34,7 @@ class ApiMetadataController(
                     .replace("http://", "")
                     .trimEnd('/'),
             ),
-            signaturePublickey = yggdrasilSignatureService.publicKeyPem,
+            signaturePublickey = signatureService.publicKeyPem,
         )
     }
 }

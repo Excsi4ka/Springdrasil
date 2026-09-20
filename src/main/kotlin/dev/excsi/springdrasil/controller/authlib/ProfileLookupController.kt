@@ -1,7 +1,7 @@
 package dev.excsi.springdrasil.controller.authlib
 
 import dev.excsi.springdrasil.dto.ProfileDto
-import dev.excsi.springdrasil.service.ProfileService
+import dev.excsi.springdrasil.service.profile.ProfileService
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping

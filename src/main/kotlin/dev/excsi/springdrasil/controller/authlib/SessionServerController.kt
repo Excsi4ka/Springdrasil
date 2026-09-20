@@ -2,7 +2,7 @@ package dev.excsi.springdrasil.controller.authlib
 
 import dev.excsi.springdrasil.dto.ClientJoinRequest
 import dev.excsi.springdrasil.dto.ProfileDto
-import dev.excsi.springdrasil.service.MinecraftSessionService
+import dev.excsi.springdrasil.service.yggdrasil.MinecraftSessionService
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -24,7 +24,8 @@ class SessionServerController(
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping("join", consumes = ["application/json;charset=UTF-8"])
     fun join(@RequestBody clientJoinRequest: ClientJoinRequest, httpServletRequest: HttpServletRequest) {
-        minecraftSessionService.join(clientJoinRequest, httpServletRequest)
+        //ideally this should be behind a proxy with proper X-Forwarded-For header
+        minecraftSessionService.join(clientJoinRequest, httpServletRequest.remoteAddr)
     }
 
     @GetMapping("hasJoined")

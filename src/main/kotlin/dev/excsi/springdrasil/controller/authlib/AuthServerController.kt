@@ -6,8 +6,8 @@ import dev.excsi.springdrasil.dto.RefreshRequest
 import dev.excsi.springdrasil.dto.RefreshResponse
 import dev.excsi.springdrasil.dto.SignoutRequest
 import dev.excsi.springdrasil.dto.TokenStateRequest
-import dev.excsi.springdrasil.service.YggdrasilAuthService
-import dev.excsi.springdrasil.service.SessionTokenService
+import dev.excsi.springdrasil.service.yggdrasil.YggdrasilAuthService
+import dev.excsi.springdrasil.service.yggdrasil.SessionTokenService
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody

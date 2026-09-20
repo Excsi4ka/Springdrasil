@@ -2,7 +2,7 @@ package dev.excsi.springdrasil.controller.authlib
 
 import dev.excsi.springdrasil.exception.YggdrasilException
 import dev.excsi.springdrasil.model.TextureType
-import dev.excsi.springdrasil.service.TextureService
+import dev.excsi.springdrasil.service.texture.TextureService
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity

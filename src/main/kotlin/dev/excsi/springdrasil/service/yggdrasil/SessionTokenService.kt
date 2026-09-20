@@ -1,15 +1,17 @@
-package dev.excsi.springdrasil.service
+package dev.excsi.springdrasil.service.yggdrasil
 
 import dev.excsi.springdrasil.configuration.AuthlibConfigurationValues
 import dev.excsi.springdrasil.dto.ProfileDto
 import dev.excsi.springdrasil.dto.RefreshRequest
 import dev.excsi.springdrasil.dto.RefreshResponse
 import dev.excsi.springdrasil.dto.TokenStateRequest
+import dev.excsi.springdrasil.dto.UserDto
 import dev.excsi.springdrasil.exception.YggdrasilException
 import dev.excsi.springdrasil.model.Profile
 import dev.excsi.springdrasil.model.SessionToken
 import dev.excsi.springdrasil.model.TokenState
 import dev.excsi.springdrasil.repository.SessionTokenRepository
+import dev.excsi.springdrasil.service.user.UserService
 import dev.excsi.springdrasil.unhyphenatedString
 import jakarta.persistence.EntityManager
 import jakarta.persistence.LockModeType
@@ -26,7 +28,7 @@ class SessionTokenService(
     val sessionTokenRepository: SessionTokenRepository,
     val authlibConfigurationValues: AuthlibConfigurationValues,
     val entityManager: EntityManager,
-    val userService: UserService,
+    val sessionValidationService: SessionValidationService,
 ) {
 
     @Transactional
@@ -65,15 +67,19 @@ class SessionTokenService(
 
     @Transactional
     fun validateToken(validateRequest: TokenStateRequest) {
-        validateTokenInternal(validateRequest.accessToken, validateRequest.clientToken)
+        sessionValidationService.validate(validateRequest.accessToken, validateRequest.clientToken)
     }
 
     @Transactional
     fun refreshToken(refreshRequest: RefreshRequest): RefreshResponse {
-        val sessionToken = validateTokenInternal(refreshRequest.accessToken, refreshRequest.clientToken, true)
+        val sessionToken = sessionValidationService.validateTemporarilyInvalid(refreshRequest.accessToken, refreshRequest.clientToken)
 
         if (refreshRequest.selectedProfile != null) {
-            throw YggdrasilException(HttpStatus.BAD_REQUEST, "IllegalArgumentException", "Access token already has a profile assigned.")
+            throw YggdrasilException(
+                HttpStatus.BAD_REQUEST,
+                "IllegalArgumentException",
+                "Access token already has a profile assigned."
+            )
         }
 
         val profile = sessionToken.boundProfile
@@ -97,9 +103,10 @@ class SessionTokenService(
             id = profile.id.unhyphenatedString(),
             name = profile.profileUsername,
         )
+
         val userInfo = if (refreshRequest.requestUser) {
             profile.user?.let {
-                userService.toUserDto(it)
+                UserDto(it.id.unhyphenatedString())
             }
         } else null
 
@@ -131,57 +138,5 @@ class SessionTokenService(
         tokenList.forEach {
             it.state = TokenState.INVALID
         }
-    }
-
-    @Transactional
-    fun validateTokenAgainstProfileId(accessToken: String, profileId: String): Profile {
-        val sessionToken = validateTokenInternal(accessToken)
-        val profile = sessionToken.boundProfile
-
-        val normalizedProfileId = profileId.replace("-", "").lowercase()
-
-        if (profile.id.unhyphenatedString() != normalizedProfileId) {
-            throw YggdrasilException(HttpStatus.FORBIDDEN, "ForbiddenOperationException", "Invalid token")
-        }
-
-        return profile
-    }
-
-    @Transactional
-    fun validateTokenAgainstUsername(accessToken: String, username: String): Profile {
-        val sessionToken = validateTokenInternal(accessToken)
-        val profile = sessionToken.boundProfile
-
-        if (!profile.profileUsername.equals(username, ignoreCase = true)) {
-            throw YggdrasilException(HttpStatus.FORBIDDEN, "ForbiddenOperationException", "Invalid token")
-        }
-
-        return profile
-    }
-
-    private fun validateTokenInternal(accessToken: String, clientToken: String? = null, allowTemporarilyInvalid: Boolean = false): SessionToken {
-        val sessionToken = sessionTokenRepository.findById(accessToken).orElseThrow {
-            throw YggdrasilException(HttpStatus.FORBIDDEN, "ForbiddenOperationException", "Invalid token")
-        }
-
-        clientToken?.let {
-            if (sessionToken.clientToken != it) {
-                throw YggdrasilException(HttpStatus.FORBIDDEN, "ForbiddenOperationException", "Invalid token")
-            }
-        }
-
-        val allowedState = sessionToken.state == TokenState.VALID ||
-            (allowTemporarilyInvalid && sessionToken.state == TokenState.TEMPORARILY_INVALID)
-
-        if (!allowedState) {
-            throw YggdrasilException(HttpStatus.FORBIDDEN, "ForbiddenOperationException", "Invalid token")
-        }
-
-        if (sessionToken.expiresAt.isBefore(Instant.now())) {
-            sessionToken.state = TokenState.INVALID
-            throw YggdrasilException(HttpStatus.FORBIDDEN, "ForbiddenOperationException", "Invalid token")
-        }
-
-        return sessionToken
     }
 }

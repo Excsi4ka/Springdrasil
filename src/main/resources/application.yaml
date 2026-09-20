@@ -27,8 +27,15 @@ springdrasil:
     yggdrasil-signature-private-key: ${YGGDRASIL_SIGNATURE_PRIVATE_KEY}
     yggdrasil-signature-public-key: ${YGGDRASIL_SIGNATURE_PUBLIC_KEY}
 
+  admin:
+    profile-name: ${ADMIN_NAME}
+    email: ${ADMIN_EMAIL}
+    password: ${ADMIN_PASSWORD}
+
   jwt:
     secret-key: ${JWT_SECRET_KEY:}
+    token-duration: ${JWT_TOKEN_DURATION:15m}
+    refresh-token-duration: ${REFRESH_TOKEN_DURATION:30d}
 
   web:
     enabled: ${WEB_ENABLED:true}

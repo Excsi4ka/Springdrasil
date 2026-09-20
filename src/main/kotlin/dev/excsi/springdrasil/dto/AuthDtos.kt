@@ -34,7 +34,7 @@ data class AuthResponse(
 
 data class UserDto(
     val id: String,
-    val properties: List<Property>
+    val properties: List<Property> = listOf(),
 )
 
 data class Property(
