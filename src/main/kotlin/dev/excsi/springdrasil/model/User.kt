@@ -1,7 +1,5 @@
 package dev.excsi.springdrasil.model
 
-import dev.excsi.springdrasil.dto.UserDto
-import dev.excsi.springdrasil.unhyphenatedString
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType

@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 @Retention(AnnotationRetention.RUNTIME)
 @ConditionalOnProperty(
     prefix = "springdrasil.web",
-    name = ["enabled"],
+    name = ["frontend-enabled"],
     havingValue = "true",
     matchIfMissing = true
 )

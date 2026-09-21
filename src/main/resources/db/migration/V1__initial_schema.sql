@@ -20,6 +20,16 @@ CREATE TABLE users(
     )
 );
 
+CREATE TABLE jwt_refresh_tokens(
+    id UUID PRIMARY KEY,
+    user_id UUID NOT NULL REFERENCES users(id),
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    expires_at TIMESTAMP WITH TIME ZONE NOT NULL
+);
+
+CREATE INDEX idx_jwt_refresh_tokens_user_id
+    ON jwt_refresh_tokens(user_id);
+
 CREATE TABLE session_tokens (
     session_token VARCHAR(255) PRIMARY KEY,
     client_token VARCHAR(255) NOT NULL,

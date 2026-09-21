@@ -1,6 +1,6 @@
 package dev.excsi.springdrasil.service.profile
 
-import dev.excsi.springdrasil.configuration.AuthlibConfigurationValues
+import dev.excsi.springdrasil.configuration.properties.AuthlibConfigurationProperties
 import dev.excsi.springdrasil.dto.ProfileDto
 import dev.excsi.springdrasil.dto.Property
 import dev.excsi.springdrasil.dto.TextureData
@@ -18,7 +18,7 @@ import java.util.LinkedHashMap
 @Service
 class ProfileSerializationService(
     val objectMapper: ObjectMapper,
-    val authlibConfigurationValues: AuthlibConfigurationValues,
+    val authlibConfigurationProperties: AuthlibConfigurationProperties,
     val signatureService: SignatureService,
 ) {
 
@@ -86,6 +86,6 @@ class ProfileSerializationService(
     }
 
     private fun textureUrl(textureHash: String): String {
-        return "${authlibConfigurationValues.baseDomainUrl.trimEnd('/')}/textures/$textureHash"
+        return "${authlibConfigurationProperties.baseDomainUrl.trimEnd('/')}/textures/$textureHash"
     }
 }

@@ -1,10 +1,10 @@
-package dev.excsi.springdrasil.configuration
+package dev.excsi.springdrasil.configuration.properties
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import java.time.Duration
 
 @ConfigurationProperties(prefix = "springdrasil.authlib")
-data class AuthlibConfigurationValues(
+data class AuthlibConfigurationProperties(
 
     val sessionTokenTimeout: Duration,
 

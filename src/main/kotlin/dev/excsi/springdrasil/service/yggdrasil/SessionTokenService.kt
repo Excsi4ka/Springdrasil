@@ -1,6 +1,6 @@
 package dev.excsi.springdrasil.service.yggdrasil
 
-import dev.excsi.springdrasil.configuration.AuthlibConfigurationValues
+import dev.excsi.springdrasil.configuration.properties.AuthlibConfigurationProperties
 import dev.excsi.springdrasil.dto.ProfileDto
 import dev.excsi.springdrasil.dto.RefreshRequest
 import dev.excsi.springdrasil.dto.RefreshResponse
@@ -11,7 +11,6 @@ import dev.excsi.springdrasil.model.Profile
 import dev.excsi.springdrasil.model.SessionToken
 import dev.excsi.springdrasil.model.TokenState
 import dev.excsi.springdrasil.repository.SessionTokenRepository
-import dev.excsi.springdrasil.service.user.UserService
 import dev.excsi.springdrasil.unhyphenatedString
 import jakarta.persistence.EntityManager
 import jakarta.persistence.LockModeType
@@ -26,14 +25,14 @@ import kotlin.jvm.optionals.getOrElse
 @Service
 class SessionTokenService(
     val sessionTokenRepository: SessionTokenRepository,
-    val authlibConfigurationValues: AuthlibConfigurationValues,
+    val authlibConfigurationProperties: AuthlibConfigurationProperties,
     val entityManager: EntityManager,
     val sessionValidationService: SessionValidationService,
 ) {
 
     @Transactional
     fun issueToken(suppliedClientToken : String?, profile: Profile): SessionToken {
-        val maxTokens = authlibConfigurationValues.maxTokensPerUserInRotation
+        val maxTokens = authlibConfigurationProperties.maxTokensPerUserInRotation
 
         entityManager.lock(profile, LockModeType.PESSIMISTIC_WRITE)
 
@@ -53,7 +52,7 @@ class SessionTokenService(
 
         val accessToken = UUID.randomUUID().unhyphenatedString()
         val clientToken = suppliedClientToken ?: UUID.randomUUID().unhyphenatedString()
-        val expiresAt = Instant.now().plus(authlibConfigurationValues.sessionTokenTimeout)
+        val expiresAt = Instant.now().plus(authlibConfigurationProperties.sessionTokenTimeout)
 
         val sessionToken = SessionToken(
             accessToken = accessToken,
@@ -87,7 +86,7 @@ class SessionTokenService(
 
         val accessToken = UUID.randomUUID().unhyphenatedString()
         val clientToken = sessionToken.clientToken
-        val expiresAt = Instant.now().plus(authlibConfigurationValues.sessionTokenTimeout)
+        val expiresAt = Instant.now().plus(authlibConfigurationProperties.sessionTokenTimeout)
 
         val newSessionToken = SessionToken(
             accessToken = accessToken,

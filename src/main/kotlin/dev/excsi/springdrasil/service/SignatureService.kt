@@ -1,6 +1,6 @@
 package dev.excsi.springdrasil.service
 
-import dev.excsi.springdrasil.configuration.AuthlibConfigurationValues
+import dev.excsi.springdrasil.configuration.properties.AuthlibConfigurationProperties
 import org.springframework.stereotype.Service
 import java.security.KeyFactory
 import java.security.PrivateKey
@@ -10,12 +10,12 @@ import java.util.Base64
 
 @Service
 class SignatureService(
-    authlibConfigurationValues: AuthlibConfigurationValues,
+    authlibConfigurationProperties: AuthlibConfigurationProperties,
 ) {
 
-    private val privateKey = parsePrivateKey(authlibConfigurationValues.yggdrasilSignaturePrivateKey)
+    private val privateKey = parsePrivateKey(authlibConfigurationProperties.yggdrasilSignaturePrivateKey)
 
-    val publicKeyPem: String = authlibConfigurationValues.yggdrasilSignaturePublicKey
+    val publicKeyPem: String = authlibConfigurationProperties.yggdrasilSignaturePublicKey
 
     fun sign(value: String): String {
         val signer = Signature.getInstance("SHA1withRSA")

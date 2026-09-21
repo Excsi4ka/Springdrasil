@@ -3,10 +3,12 @@ package dev.excsi.springdrasil.configuration
 import com.nimbusds.jose.jwk.source.ImmutableSecret
 import com.nimbusds.jose.jwk.source.JWKSource
 import com.nimbusds.jose.proc.SecurityContext
+import dev.excsi.springdrasil.configuration.properties.JwtConfigurationProperties
 import dev.excsi.springdrasil.repository.UserRepository
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
@@ -22,6 +24,7 @@ import org.springframework.security.oauth2.jwt.JwtEncoder
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository
 import javax.crypto.spec.SecretKeySpec
 
 @Configuration
@@ -31,9 +34,7 @@ class SecurityConfiguration(
     @Value($$"${springdrasil.authlib.prefix}")
     val authLibPrefix: String,
 
-    @Value($$"${springdrasil.jwt.secret-key}")
-    val jwtSecretKey: String
-
+    val jwtConfigurationProperties: JwtConfigurationProperties
 ) {
 
     @Bean
@@ -55,7 +56,10 @@ class SecurityConfiguration(
                 ).hasRole("ADMIN")
             }
             .csrf {
-                it.disable()
+                it.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                it.requireCsrfProtectionMatcher {
+                    request -> HttpMethod.POST.matches(request.method) && request.servletPath.equals("/api/auth/refresh")
+                }
             }
             .sessionManagement {
                 it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -96,6 +100,6 @@ class SecurityConfiguration(
     }
 
     private fun getSecretKeySpec(): SecretKeySpec {
-        return SecretKeySpec(jwtSecretKey.toByteArray(), "HmacSHA256")
+        return SecretKeySpec(jwtConfigurationProperties.secretKey.toByteArray(), "HmacSHA256")
     }
 }

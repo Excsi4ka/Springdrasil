@@ -5,14 +5,31 @@ data class NameAvailableResponse(
     val available: Boolean
 )
 
-data class LoginUserRequest(
+data class WebLoginRequest(
     val email: String,
     val password: String
 )
 
-data class LoginUserResponse(
+data class LoginResult(
+    val email: String,
+    val profileName: String,
     val jwtToken: String,
+    val jwtRefreshToken: String
+)
 
+data class LoginResponse(
+    val email: String,
+    val profileName: String,
+    val jwtToken: String,
+)
+
+data class JwtRefreshResult(
+    val jwtToken: String,
+    val jwtRefreshToken: String
+)
+
+data class JwtRefreshResponse(
+    val jwtToken: String,
 )
 
 data class EmailVerification(
@@ -23,5 +40,14 @@ data class EmailVerification(
 data class RegisterUserRequest(
     val email: String,
     val password: String,
+    val profileName: String
+)
+
+data class CsrfTokenResponse(
+    val csrfToken: String,
+)
+
+data class UserDataResponse(
+    val email: String,
     val profileName: String
 )

@@ -1,6 +1,6 @@
 package dev.excsi.springdrasil.service.profile
 
-import dev.excsi.springdrasil.configuration.AuthlibConfigurationValues
+import dev.excsi.springdrasil.configuration.properties.AuthlibConfigurationProperties
 import dev.excsi.springdrasil.dto.NameAvailableResponse
 import dev.excsi.springdrasil.dto.ProfileDto
 import dev.excsi.springdrasil.exception.YggdrasilException
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service
 class ProfileService(
     val profileRepository: ProfileRepository,
     val profileSerializationService: ProfileSerializationService,
-    val authlibConfigurationValues: AuthlibConfigurationValues
+    val authlibConfigurationProperties: AuthlibConfigurationProperties
 ) {
 
     fun nameAvailable(profileName: String): NameAvailableResponse {
@@ -39,7 +39,7 @@ class ProfileService(
 
     fun queryProfiles(usernames: List<String>): List<ProfileDto> {
         val count = usernames.size
-        if (count < 2 || count > authlibConfigurationValues.maxProfilesPerRequest) {
+        if (count < 2 || count > authlibConfigurationProperties.maxProfilesPerRequest) {
             return emptyList()
         }
 

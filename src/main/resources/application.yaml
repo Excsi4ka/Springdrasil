@@ -38,4 +38,5 @@ springdrasil:
     refresh-token-duration: ${REFRESH_TOKEN_DURATION:30d}
 
   web:
-    enabled: ${WEB_ENABLED:true}
+    frontend-enabled: ${FRONTEND_ENABLED:true}
+    https-enabled: ${HTTPS_ENABLED:true}

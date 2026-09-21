@@ -1,6 +1,6 @@
 package dev.excsi.springdrasil.controller.authlib
 
-import dev.excsi.springdrasil.configuration.AuthlibConfigurationValues
+import dev.excsi.springdrasil.configuration.properties.AuthlibConfigurationProperties
 import dev.excsi.springdrasil.dto.ApiMetadataResponse
 import dev.excsi.springdrasil.service.SignatureService
 import org.springframework.boot.info.BuildProperties
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping($$"${springdrasil.authlib.prefix}")
 class ApiMetadataController(
-    val authlibConfigurationValues: AuthlibConfigurationValues,
+    val authlibConfigurationProperties: AuthlibConfigurationProperties,
     val signatureService: SignatureService,
     val buildProperties: BuildProperties
 ) {
@@ -25,11 +25,11 @@ class ApiMetadataController(
                 "implementationVersion" to "${buildProperties.version}",
                 "feature.non_email_login" to false,
                 "links" to mapOf(
-                    "homepage" to authlibConfigurationValues.baseDomainUrl,
+                    "homepage" to authlibConfigurationProperties.baseDomainUrl,
                 )
             ),
             skinDomains = listOf(
-                authlibConfigurationValues.baseDomainUrl
+                authlibConfigurationProperties.baseDomainUrl
                     .replace("https://", "")
                     .replace("http://", "")
                     .trimEnd('/'),
