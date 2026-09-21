@@ -65,6 +65,19 @@ class WebAuthenticationService(
         )
     }
 
+    @Transactional
+    fun logout(rawRefreshToken: String?) {
+        if (rawRefreshToken == null) {
+            return
+        }
+
+        if (rawRefreshToken.isBlank()) {
+            return
+        }
+
+        jwtRefreshTokenService.invalidateToken(rawRefreshToken)
+    }
+
     fun me(jwtAuthenticationToken: JwtAuthenticationToken): UserDataResponse {
         val userId = UUID.fromString(jwtAuthenticationToken.name)
         val user = userRepository.findById(userId).orElseThrow {

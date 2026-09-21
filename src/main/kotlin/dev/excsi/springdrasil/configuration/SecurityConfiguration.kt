@@ -3,6 +3,8 @@ package dev.excsi.springdrasil.configuration
 import com.nimbusds.jose.jwk.source.ImmutableSecret
 import com.nimbusds.jose.jwk.source.JWKSource
 import com.nimbusds.jose.proc.SecurityContext
+import dev.excsi.springdrasil.component.JwtTokenAuthenticationConverter
+import dev.excsi.springdrasil.configuration.properties.AuthlibConfigurationProperties
 import dev.excsi.springdrasil.configuration.properties.JwtConfigurationProperties
 import dev.excsi.springdrasil.repository.UserRepository
 import org.springframework.beans.factory.annotation.Value
@@ -10,7 +12,6 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
@@ -31,17 +32,18 @@ import javax.crypto.spec.SecretKeySpec
 @EnableWebSecurity
 class SecurityConfiguration(
 
-    @Value($$"${springdrasil.authlib.prefix}")
-    val authLibPrefix: String,
+    val authlibConfigurationProperties: AuthlibConfigurationProperties,
 
-    val jwtConfigurationProperties: JwtConfigurationProperties
+    val jwtConfigurationProperties: JwtConfigurationProperties,
+
+    val jwtAuthenticationConverter: JwtTokenAuthenticationConverter
 ) {
 
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         return http
             .authorizeHttpRequests {
-                val prefix = authLibPrefix.trim('/')
+                val prefix = authlibConfigurationProperties.prefix.trim('/')
                 it.requestMatchers(
                     "$prefix/**",
                     "/admin",
@@ -65,7 +67,9 @@ class SecurityConfiguration(
                 it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             }
             .oauth2ResourceServer {
-                it.jwt(Customizer.withDefaults())
+                it.jwt {
+                    jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)
+                }
             }
             .build()
     }

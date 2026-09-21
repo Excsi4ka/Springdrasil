@@ -45,6 +45,22 @@ class JwtRefreshTokenService(
         return issueToken(user)
     }
 
+    @Transactional
+    fun invalidateAllTokens(userId: UUID) {
+        jwtRefreshTokenRepository.deleteAllByUserId(userId)
+    }
+
+    @Transactional
+    fun invalidateToken(rawRefreshToken: String) {
+        val refreshTokenId = try {
+            parseRefreshToken(rawRefreshToken)
+        } catch (exception: Exception) {
+            return
+        }
+
+        jwtRefreshTokenRepository.deleteById(refreshTokenId)
+    }
+
     private fun parseRefreshToken(refreshToken: String): UUID {
         return try {
             UUID.fromString(refreshToken)

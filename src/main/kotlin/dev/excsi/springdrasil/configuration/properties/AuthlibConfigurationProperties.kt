@@ -6,6 +6,8 @@ import java.time.Duration
 @ConfigurationProperties(prefix = "springdrasil.authlib")
 data class AuthlibConfigurationProperties(
 
+    val prefix: String,
+
     val sessionTokenTimeout: Duration,
 
     val maxTokensPerUserInRotation: Int,

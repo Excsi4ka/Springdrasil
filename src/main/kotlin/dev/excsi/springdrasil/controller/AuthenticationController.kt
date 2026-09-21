@@ -20,18 +20,19 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.time.Duration
 
 @RestController
 @RequestMapping("api/auth")
 class AuthenticationController(
-    val webAuthService: WebAuthenticationService,
+    val webAuthenticationService: WebAuthenticationService,
     val jwtConfigurationProperties: JwtConfigurationProperties,
     val webConfigurationProperties: WebConfigurationProperties
 ) {
 
     @PostMapping("login")
     fun login(@RequestBody webLoginRequest: WebLoginRequest): ResponseEntity<LoginResponse> {
-        val result = webAuthService.login(webLoginRequest)
+        val result = webAuthenticationService.login(webLoginRequest)
 
         val responseBody = LoginResponse(
             email = result.email,
@@ -41,7 +42,7 @@ class AuthenticationController(
 
         val refreshCookie = ResponseCookie.from("jwt_refresh_token", result.jwtRefreshToken)
             .httpOnly(true)
-            .path("/api/auth/refresh")
+            .path("/api/auth")
             .maxAge(jwtConfigurationProperties.refreshTokenDuration)
             .secure(webConfigurationProperties.httpsEnabled)
             .sameSite("Lax")
@@ -54,15 +55,29 @@ class AuthenticationController(
     }
 
     @PostMapping("logout")
-    fun logout() {
+    fun logout(
+        @CookieValue(name = "jwt_refresh_token", required = false) refreshToken: String?
+    ): ResponseEntity<Void> {
+        webAuthenticationService.logout( refreshToken)
 
+        val expiredCookie = ResponseCookie.from("jwt_refresh_token", "")
+            .httpOnly(true)
+            .path("/api/auth")
+            .maxAge(Duration.ZERO)
+            .secure(webConfigurationProperties.httpsEnabled)
+            .sameSite("Lax")
+            .build()
+
+        return ResponseEntity.noContent()
+            .header(HttpHeaders.SET_COOKIE, expiredCookie.toString())
+            .build()
     }
 
     @PostMapping("refresh")
     fun refresh(
         @CookieValue(name = "jwt_refresh_token", required = false) refreshToken: String?
     ): ResponseEntity<JwtRefreshResponse> {
-        val result = webAuthService.refresh(refreshToken)
+        val result = webAuthenticationService.refresh(refreshToken)
 
         val responseBody = JwtRefreshResponse(
             jwtToken = result.jwtToken,
@@ -70,7 +85,7 @@ class AuthenticationController(
 
         val refreshCookie = ResponseCookie.from("jwt_refresh_token", result.jwtRefreshToken)
             .httpOnly(true)
-            .path("/api/auth/refresh")
+            .path("/api/auth")
             .maxAge(jwtConfigurationProperties.refreshTokenDuration)
             .secure(webConfigurationProperties.httpsEnabled)
             .sameSite("Lax")
@@ -89,6 +104,6 @@ class AuthenticationController(
 
     @GetMapping("me")
     fun me(jwtAuthToken: JwtAuthenticationToken): UserDataResponse {
-        return webAuthService.me(jwtAuthToken)
+        return webAuthenticationService.me(jwtAuthToken)
     }
 }

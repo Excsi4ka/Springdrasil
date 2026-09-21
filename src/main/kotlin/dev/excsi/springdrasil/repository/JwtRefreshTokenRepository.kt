@@ -5,4 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 import java.util.UUID
 
 interface JwtRefreshTokenRepository : JpaRepository<JwtRefreshToken, UUID> {
+
+    fun deleteAllByUserId(userId: UUID)
 }

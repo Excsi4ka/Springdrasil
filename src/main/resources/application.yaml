@@ -34,7 +34,7 @@ springdrasil:
 
   jwt:
     secret-key: ${JWT_SECRET_KEY:}
-    token-duration: ${JWT_TOKEN_DURATION:15m}
+    token-duration: ${JWT_TOKEN_DURATION:10m}
     refresh-token-duration: ${REFRESH_TOKEN_DURATION:30d}
 
   web:
