@@ -38,6 +38,7 @@ class User(
     @field:Column(name = "created_at", nullable = false)
     var createdAt: Instant = Instant.now(),
 
+    @field:Enumerated(EnumType.STRING)
     @field:Column(name = "status", nullable = false)
     var status: Status = Status.UNVERIFIED
 

@@ -21,6 +21,10 @@ class UserService(
         return userRepository.findByEmail(email)
     }
 
+    fun findByProfileName(name: String) : User? {
+        return userRepository.findByProfileProfileUsername(name)
+    }
+
     @Transactional
     fun createUser(email: String, profileName: String, password: String) {
         TODO()

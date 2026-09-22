@@ -20,13 +20,13 @@ class ApiMetadataController(
     fun metadata(): ApiMetadataResponse {
         return ApiMetadataResponse(
             meta = mapOf(
-                "serverName" to "SpringdrasilAuthServer",
                 "implementationName" to "Springdrasil",
                 "implementationVersion" to "${buildProperties.version}",
-                "feature.non_email_login" to false,
                 "links" to mapOf(
                     "homepage" to authlibConfigurationProperties.baseDomainUrl,
-                )
+                ),
+                "serverName" to "SpringdrasilAuthServer",
+                "feature.non_email_login" to true,
             ),
             skinDomains = listOf(
                 authlibConfigurationProperties.baseDomainUrl

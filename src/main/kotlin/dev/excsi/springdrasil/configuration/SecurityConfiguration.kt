@@ -45,7 +45,7 @@ class SecurityConfiguration(
             .authorizeHttpRequests {
                 val prefix = authlibConfigurationProperties.prefix.trim('/')
                 it.requestMatchers(
-                    "$prefix/**",
+                    "/$prefix/**",
                     "/admin",
                     "/admin/login",
                     "/admin/dashboard/**",

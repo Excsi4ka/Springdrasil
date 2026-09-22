@@ -48,9 +48,7 @@ data class Property(
 data class ProfileDto(
     val id: String,
     val name: String,
-
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    val properties: List<Property>? = null,
+    val properties: List<Property> = emptyList(),
 )
 
 data class TextureDto(

@@ -16,7 +16,7 @@ CREATE TABLE users(
     ),
     created_at TIMESTAMP WITH TIME ZONE NOT NULL,
     status VARCHAR(32) NOT NULL CHECK (
-        role IN ('ACTIVE', 'DELETED', 'UNVERIFIED')
+        status IN ('ACTIVE', 'DELETED', 'UNVERIFIED')
     )
 );
 
