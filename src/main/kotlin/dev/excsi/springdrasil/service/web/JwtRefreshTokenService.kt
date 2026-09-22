@@ -31,9 +31,8 @@ class JwtRefreshTokenService(
     @Transactional
     fun rotateToken(rawRefreshToken: String): JwtRefreshToken {
         val refreshTokenId = parseRefreshToken(rawRefreshToken)
-        val currentToken = jwtRefreshTokenRepository.findById(refreshTokenId).orElseThrow {
-            ResponseStatusException(HttpStatus.UNAUTHORIZED)
-        }
+        val currentToken = jwtRefreshTokenRepository.findLockedById(refreshTokenId)
+            ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
 
         if (currentToken.expiresAt.isBefore(Instant.now(Clock.systemUTC()))) {
             jwtRefreshTokenRepository.delete(currentToken)
@@ -47,7 +46,11 @@ class JwtRefreshTokenService(
 
     @Transactional
     fun invalidateAllTokens(userId: UUID) {
-        jwtRefreshTokenRepository.deleteAllByUserId(userId)
+        val tokens = jwtRefreshTokenRepository.findLockedByUserId(userId)
+
+        if (tokens.isNotEmpty()) {
+            jwtRefreshTokenRepository.deleteAll(tokens)
+        }
     }
 
     @Transactional

@@ -47,6 +47,8 @@ class Texture(
 )
 
 enum class TextureType {
+
     SKIN,
+
     CAPE
 }

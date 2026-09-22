@@ -7,7 +7,7 @@ import dev.excsi.springdrasil.dto.RefreshResponse
 import dev.excsi.springdrasil.dto.SignoutRequest
 import dev.excsi.springdrasil.dto.TokenStateRequest
 import dev.excsi.springdrasil.service.yggdrasil.YggdrasilAuthService
-import dev.excsi.springdrasil.service.yggdrasil.SessionTokenService
+import dev.excsi.springdrasil.service.yggdrasil.YggdrasilSessionTokenService
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController
 )
 class AuthServerController(
     val authenticationService: YggdrasilAuthService,
-    val sessionTokenService: SessionTokenService,
+    val yggdrasilSessionTokenService: YggdrasilSessionTokenService,
 ) {
 
     @PostMapping("authenticate")
@@ -32,19 +32,19 @@ class AuthServerController(
 
     @PostMapping("refresh")
     fun refresh(@RequestBody refreshRequest: RefreshRequest): RefreshResponse {
-        return sessionTokenService.refreshToken(refreshRequest)
+        return yggdrasilSessionTokenService.refreshToken(refreshRequest)
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping("validate")
     fun validate(@RequestBody validateRequest: TokenStateRequest) {
-        sessionTokenService.validateToken(validateRequest)
+        yggdrasilSessionTokenService.validateToken(validateRequest)
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping("invalidate")
     fun invalidate(@RequestBody invalidateRequest: TokenStateRequest) {
-        sessionTokenService.invalidateToken(invalidateRequest)
+        yggdrasilSessionTokenService.invalidateToken(invalidateRequest)
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)

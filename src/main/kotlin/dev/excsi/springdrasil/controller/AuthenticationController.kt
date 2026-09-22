@@ -5,7 +5,7 @@ import dev.excsi.springdrasil.configuration.properties.WebConfigurationPropertie
 import dev.excsi.springdrasil.dto.CsrfTokenResponse
 import dev.excsi.springdrasil.dto.JwtRefreshResponse
 import dev.excsi.springdrasil.dto.LoginResponse
-import dev.excsi.springdrasil.dto.UserDataResponse
+import dev.excsi.springdrasil.dto.UserData
 import dev.excsi.springdrasil.dto.WebLoginRequest
 import dev.excsi.springdrasil.service.web.WebAuthenticationService
 import org.springframework.http.HttpHeaders
@@ -103,7 +103,7 @@ class AuthenticationController(
     }
 
     @GetMapping("me")
-    fun me(jwtAuthToken: JwtAuthenticationToken): UserDataResponse {
+    fun me(jwtAuthToken: JwtAuthenticationToken): UserData {
         return webAuthenticationService.me(jwtAuthToken)
     }
 }

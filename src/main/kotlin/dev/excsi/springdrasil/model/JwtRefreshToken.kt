@@ -14,7 +14,7 @@ import java.util.UUID
 @Table(name = "jwt_refresh_tokens")
 class JwtRefreshToken(
 
-    @Id
+    @field:Id
     var id: UUID = UUID.randomUUID(),
 
     @field:ManyToOne(fetch = FetchType.EAGER, optional = false)

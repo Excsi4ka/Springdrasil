@@ -5,18 +5,15 @@ import dev.excsi.springdrasil.isUnhyphenatedUuidValid
 import dev.excsi.springdrasil.model.SkinModel
 import dev.excsi.springdrasil.model.Texture
 import dev.excsi.springdrasil.model.TextureType
-import dev.excsi.springdrasil.repository.TextureRepository
-import dev.excsi.springdrasil.service.yggdrasil.SessionValidationService
+import dev.excsi.springdrasil.service.yggdrasil.YggdrasilSessionValidationService
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.multipart.MultipartFile
-import java.security.MessageDigest
 
 @Service
 class TextureService(
-    val textureRepository: TextureRepository,
-    val sessionValidationService: SessionValidationService,
+    val textureStorageService: TextureStorageService,
+    val yggdrasilSessionValidationService: YggdrasilSessionValidationService,
 ) {
 
     @Transactional
@@ -24,19 +21,15 @@ class TextureService(
         uuid: String,
         textureType: TextureType,
         authorizationHeader: String,
-        file: MultipartFile,
-        model: String?
-    ) {
+        bytes: ByteArray,
+        model: String?,
+    ): Texture {
         if (!uuid.isUnhyphenatedUuidValid()) {
             throw YggdrasilException(HttpStatus.BAD_REQUEST, "IllegalArgumentException", "Unhyphenated UUID required.")
         }
         val accessToken = sanitizeAuthorizationHeader(authorizationHeader)
 
-        val profile = sessionValidationService.validateTokenAgainstProfileId(accessToken, uuid)
-
-
-
-        val existingTexture = textureRepository.findTextureByProfileIdAndTextureType(profile.id, textureType)
+        val profile = yggdrasilSessionValidationService.validateTokenAgainstProfileId(accessToken, uuid)
 
         if (textureType == TextureType.SKIN) {
             profile.skinModel =
@@ -46,19 +39,8 @@ class TextureService(
                     SkinModel.DEFAULT
         }
 
-        val textureData = file.bytes
-        val textureHash = hashTexture(textureData)
-        val texture = existingTexture?.apply {
-            this.textureHash = textureHash
-            this.byteArray = textureData
-        } ?: Texture(
-            profile = profile,
-            textureType = textureType,
-            textureHash = textureHash,
-            byteArray = textureData
-        )
-
-        textureRepository.save(texture)
+        val sanitizedBytes = textureStorageService.sanitize(textureType, bytes)
+        return textureStorageService.save(profile, textureType, sanitizedBytes)
     }
 
     @Transactional
@@ -72,20 +54,15 @@ class TextureService(
         }
         val accessToken = sanitizeAuthorizationHeader(authorizationHeader)
 
-        val profile = sessionValidationService.validateTokenAgainstProfileId(accessToken, uuid)
+        val profile = yggdrasilSessionValidationService.validateTokenAgainstProfileId(accessToken, uuid)
         val texture = profile.textures.firstOrNull {
             it.textureType == textureType
         }
 
         texture?.let {
             profile.textures.remove(it)
-            textureRepository.delete(it)
+            textureStorageService.delete(it)
         }
-    }
-
-    fun getTexture(textureHash: String): Texture {
-        return textureRepository.findTextureByTextureHash(textureHash)
-            ?: throw YggdrasilException(HttpStatus.NOT_FOUND, "TextureNotFound", "Texture not found.")
     }
 
     private fun sanitizeAuthorizationHeader(value: String): String {
@@ -101,14 +78,7 @@ class TextureService(
         return token
     }
 
-    fun hashTexture(bytes: ByteArray): String {
-        val digest = MessageDigest.getInstance("SHA-256").digest(bytes)
-        val hash = StringBuilder()
-
-        for (byte in digest) {
-            hash.append("%02x".format(byte))
-        }
-
-        return hash.toString()
+    fun getTexture(textureHash: String): Texture {
+        return textureStorageService.findByHash(textureHash)
     }
 }

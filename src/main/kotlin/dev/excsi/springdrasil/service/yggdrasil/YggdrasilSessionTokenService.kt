@@ -23,11 +23,11 @@ import java.util.UUID
 import kotlin.jvm.optionals.getOrElse
 
 @Service
-class SessionTokenService(
+class YggdrasilSessionTokenService(
     val sessionTokenRepository: SessionTokenRepository,
     val authlibConfigurationProperties: AuthlibConfigurationProperties,
     val entityManager: EntityManager,
-    val sessionValidationService: SessionValidationService,
+    val yggdrasilSessionValidationService: YggdrasilSessionValidationService,
 ) {
 
     @Transactional
@@ -66,12 +66,12 @@ class SessionTokenService(
 
     @Transactional
     fun validateToken(validateRequest: TokenStateRequest) {
-        sessionValidationService.validate(validateRequest.accessToken, validateRequest.clientToken)
+        yggdrasilSessionValidationService.validate(validateRequest.accessToken, validateRequest.clientToken)
     }
 
     @Transactional
     fun refreshToken(refreshRequest: RefreshRequest): RefreshResponse {
-        val sessionToken = sessionValidationService.validateTemporarilyInvalid(refreshRequest.accessToken, refreshRequest.clientToken)
+        val sessionToken = yggdrasilSessionValidationService.validateTemporarilyInvalid(refreshRequest.accessToken, refreshRequest.clientToken)
 
         if (refreshRequest.selectedProfile != null) {
             throw YggdrasilException(

@@ -7,7 +7,6 @@ import dev.excsi.springdrasil.component.JwtTokenAuthenticationConverter
 import dev.excsi.springdrasil.configuration.properties.AuthlibConfigurationProperties
 import dev.excsi.springdrasil.configuration.properties.JwtConfigurationProperties
 import dev.excsi.springdrasil.repository.UserRepository
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
@@ -45,7 +44,7 @@ class SecurityConfiguration(
             .authorizeHttpRequests {
                 val prefix = authlibConfigurationProperties.prefix.trim('/')
                 it.requestMatchers(
-                    "$prefix/**",
+                    "/$prefix/**",
                     "/admin",
                     "/admin/login",
                     "/admin/dashboard/**",

@@ -8,4 +8,8 @@ data class WebConfigurationProperties(
     val frontendEnabled: Boolean,
 
     val httpsEnabled: Boolean,
+
+    val emailVerification: Boolean,
+
+    val inviteOnly: Boolean,
 )

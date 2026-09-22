@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
 
 @Service
-class SessionValidationService(
+class YggdrasilSessionValidationService(
     val sessionTokenRepository: SessionTokenRepository,
 ) {
 

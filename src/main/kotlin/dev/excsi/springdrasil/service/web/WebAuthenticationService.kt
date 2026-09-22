@@ -2,12 +2,14 @@ package dev.excsi.springdrasil.service.web
 
 import dev.excsi.springdrasil.dto.JwtRefreshResult
 import dev.excsi.springdrasil.dto.LoginResult
-import dev.excsi.springdrasil.dto.UserDataResponse
+import dev.excsi.springdrasil.dto.UserData
 import dev.excsi.springdrasil.dto.WebLoginRequest
+import dev.excsi.springdrasil.model.Status
 import dev.excsi.springdrasil.model.User
-import dev.excsi.springdrasil.repository.UserRepository
+import dev.excsi.springdrasil.service.user.UserService
 import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.DisabledException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
@@ -19,7 +21,7 @@ import java.util.UUID
 @Service
 class WebAuthenticationService(
     val authenticationManager: AuthenticationManager,
-    val userRepository: UserRepository,
+    val userService: UserService,
     val jwtTokenService: JwtTokenService,
     val jwtRefreshTokenService: JwtRefreshTokenService
 ) {
@@ -32,6 +34,11 @@ class WebAuthenticationService(
             )
 
             val user = authentication.principal as User
+
+            if (user.status != Status.ACTIVE) {
+                throw DisabledException("User account inactive")
+            }
+
             val jwtToken = jwtTokenService.issueToken(user)
             val jwtRefreshToken = jwtRefreshTokenService.issueToken(user)
 
@@ -47,20 +54,20 @@ class WebAuthenticationService(
     }
 
     @Transactional
-    fun refresh(refreshToken: String?): JwtRefreshResult {
-        if (refreshToken == null) {
+    fun refresh(rawRefreshToken: String?): JwtRefreshResult {
+        if (rawRefreshToken == null) {
             throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
         }
 
-        if (refreshToken.isBlank()) {
+        if (rawRefreshToken.isBlank()) {
             throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
         }
 
-        val refreshToken = jwtRefreshTokenService.rotateToken(refreshToken)
-        val jwtToken = jwtTokenService.issueToken(refreshToken.user)
+        val newRefreshToken = jwtRefreshTokenService.rotateToken(rawRefreshToken)
+        val jwtToken = jwtTokenService.issueToken(newRefreshToken.user)
 
         return JwtRefreshResult(
-            jwtRefreshToken = refreshToken.id.toString(),
+            jwtRefreshToken = newRefreshToken.id.toString(),
             jwtToken = jwtToken,
         )
     }
@@ -78,15 +85,21 @@ class WebAuthenticationService(
         jwtRefreshTokenService.invalidateToken(rawRefreshToken)
     }
 
-    fun me(jwtAuthenticationToken: JwtAuthenticationToken): UserDataResponse {
+    fun me(jwtAuthenticationToken: JwtAuthenticationToken): UserData {
         val userId = UUID.fromString(jwtAuthenticationToken.name)
-        val user = userRepository.findById(userId).orElseThrow {
-            ResponseStatusException(HttpStatus.NOT_FOUND)
-        }
+        val user = userService.findById(userId)
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
 
-        return UserDataResponse(
+        val profile = user.profile
+
+        return UserData(
             email = user.email,
-            profileName = user.profile.profileUsername
+            userId = user.id,
+            profileName = profile.profileUsername,
+            gameProfileUUID = profile.id,
+            creationDate = user.createdAt.toString(),
+            status = user.status,
+            role = user.role,
         )
     }
 }

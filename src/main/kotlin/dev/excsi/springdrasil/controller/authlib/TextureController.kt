@@ -1,6 +1,5 @@
 package dev.excsi.springdrasil.controller.authlib
 
-import dev.excsi.springdrasil.exception.YggdrasilException
 import dev.excsi.springdrasil.model.TextureType
 import dev.excsi.springdrasil.service.texture.TextureService
 import org.springframework.http.HttpStatus
@@ -40,15 +39,11 @@ class TextureController(
         @RequestPart("model", required = false) model: String?,
         @RequestPart("file") file: MultipartFile,
     ): ResponseEntity<Void> {
-        if (file.contentType != MediaType.IMAGE_PNG_VALUE) {
-            throw YggdrasilException(HttpStatus.BAD_REQUEST, "IllegalArgumentException", "Texture must be a PNG image.")
-        }
-
         textureService.uploadTexture(
             uuid,
             textureType,
             authorizationHeaderVal,
-            file,
+            file.bytes,
             model
         )
 

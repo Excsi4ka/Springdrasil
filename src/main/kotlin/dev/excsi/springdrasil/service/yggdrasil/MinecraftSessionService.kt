@@ -13,13 +13,13 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class MinecraftSessionService(
     val joinSessionCache: Cache<String, JoinSessionData>,
-    val sessionValidationService: SessionValidationService,
+    val yggdrasilSessionValidationService: YggdrasilSessionValidationService,
     val profileService: ProfileService,
     val profileSerializationService: ProfileSerializationService
 ) {
 
     fun join(clientJoinRequest: ClientJoinRequest, remoteAddress: String) {
-        sessionValidationService.validateTokenAgainstProfileId(clientJoinRequest.accessToken, clientJoinRequest.selectedProfile)
+        yggdrasilSessionValidationService.validateTokenAgainstProfileId(clientJoinRequest.accessToken, clientJoinRequest.selectedProfile)
 
         val joinSessionData = JoinSessionData(
             ipAddress = remoteAddress,
@@ -39,7 +39,7 @@ class MinecraftSessionService(
         }
 
         return try {
-            val profile = sessionValidationService.validateTokenAgainstUsername(joinData.accessToken, username)
+            val profile = yggdrasilSessionValidationService.validateTokenAgainstUsername(joinData.accessToken, username)
             profileSerializationService.serializeProfileWithProperties(profile)
         } catch (exception: YggdrasilException) {
             null

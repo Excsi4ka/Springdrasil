@@ -14,6 +14,11 @@ spring:
   flyway:
     enabled: true
 
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 2MB
+
 server:
   forward-headers-strategy: framework
 
@@ -33,10 +38,12 @@ springdrasil:
     password: ${ADMIN_PASSWORD}
 
   jwt:
-    secret-key: ${JWT_SECRET_KEY:}
+    secret-key: ${JWT_SECRET_KEY}
     token-duration: ${JWT_TOKEN_DURATION:10m}
     refresh-token-duration: ${REFRESH_TOKEN_DURATION:30d}
 
   web:
     frontend-enabled: ${FRONTEND_ENABLED:true}
     https-enabled: ${HTTPS_ENABLED:true}
+    email-verification: ${EMAIL_VERIFICATION:false}
+    invite-only: ${INVITE_ONLY_REGISTER:false}
