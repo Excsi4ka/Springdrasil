@@ -30,14 +30,14 @@ class ApiMetadataController(
             ),
             skinDomains = listOf(
 
-                "textures.minecraft.net",
-
                 authlibConfigurationProperties.baseDomainUrl
                     .replace("https://", "")
                     .replace("http://", "")
                     .trimEnd('/'),
 
-            ),
+                "textures.minecraft.net",
+
+                ),
             signaturePublickey = signatureService.publicKeyPem,
         )
     }

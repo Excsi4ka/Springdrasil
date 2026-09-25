@@ -86,6 +86,6 @@ class ProfileSerializationService(
     }
 
     private fun textureUrl(textureHash: String): String {
-        return "${authlibConfigurationProperties.baseDomainUrl.trimEnd('/')}/textures/$textureHash"
+        return "${authlibConfigurationProperties.baseDomainUrl.trimEnd('/')}/${authlibConfigurationProperties.prefix}/textures/$textureHash"
     }
 }

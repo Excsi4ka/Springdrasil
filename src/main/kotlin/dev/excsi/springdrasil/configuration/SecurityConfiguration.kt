@@ -23,6 +23,8 @@ import org.springframework.security.oauth2.jwt.JwtDecoder
 import org.springframework.security.oauth2.jwt.JwtEncoder
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder
+import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver
+import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository
 import javax.crypto.spec.SecretKeySpec
@@ -39,7 +41,10 @@ class SecurityConfiguration(
 ) {
 
     @Bean
-    fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
+    fun securityFilterChain(
+        http: HttpSecurity,
+        bearerTokenResolver: BearerTokenResolver,
+    ): SecurityFilterChain {
         return http
             .authorizeHttpRequests {
                 val prefix = authlibConfigurationProperties.prefix.trim('/')
@@ -66,11 +71,28 @@ class SecurityConfiguration(
                 it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             }
             .oauth2ResourceServer {
+                it.bearerTokenResolver(bearerTokenResolver)
                 it.jwt {
                     jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)
                 }
             }
             .build()
+    }
+
+    @Bean
+    fun bearerTokenResolver(): BearerTokenResolver {
+        val defaultResolver = DefaultBearerTokenResolver()
+        val authlibPath = "/${authlibConfigurationProperties.prefix.trim('/')}"
+
+        return BearerTokenResolver {
+            val path = it.requestURI.removePrefix(it.contextPath)
+
+            if (path == authlibPath || path.startsWith("$authlibPath/")) {
+                null
+            } else {
+                defaultResolver.resolve(it)
+            }
+        }
     }
 
     @Bean
