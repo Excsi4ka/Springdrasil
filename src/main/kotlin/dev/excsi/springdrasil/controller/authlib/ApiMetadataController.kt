@@ -28,13 +28,17 @@ class ApiMetadataController(
                 "serverName" to "SpringdrasilAuthServer",
                 "feature.non_email_login" to true,
             ),
-            signaturePublickey = signatureService.publicKeyPem,
             skinDomains = listOf(
+
+                "textures.minecraft.net",
+
                 authlibConfigurationProperties.baseDomainUrl
                     .replace("https://", "")
                     .replace("http://", "")
                     .trimEnd('/'),
-            )
+
+            ),
+            signaturePublickey = signatureService.publicKeyPem,
         )
     }
 }
