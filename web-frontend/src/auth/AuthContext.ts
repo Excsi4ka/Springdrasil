@@ -8,9 +8,7 @@ export const unauthenticatedAuth: AuthContextValue = {
   loggedIn: false,
 }
 
-export const AuthContext = createContext<AuthContextValue>(
-  unauthenticatedAuth,
-)
+export const AuthContext = createContext<AuthContextValue>(unauthenticatedAuth)
 
 export function useAuth() {
   return useContext(AuthContext)
